@@ -1285,23 +1285,27 @@
         btnIcon.textContent = 'hourglass_empty';
 
         // Encode as application/x-www-form-urlencoded — required by Netlify Forms
-        const formData = new FormData();
-        formData.append('form-name', 'contact');
-        formData.append('name',      f.name.value.trim());
-        formData.append('email',     f.email.value.trim());
-        formData.append('company',   f.company.value.trim() || '');
-        formData.append('role',      f.role.value || '');
-        formData.append('service',   f.service.value);
-        formData.append('budget',    f.budget.value || '');
-        formData.append('timeline',  f.timeline.value || '');
-        formData.append('message',   f.message.value.trim());
+        const encode = (data) =>
+        Object.keys(data)
+            .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(data[k]))
+            .join('&');
 
         try {
-          const res = await fetch('/', {
+        const res = await fetch('/', {
             method:  'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body:    new URLSearchParams(formData).toString(),
-          });
+            body: encode({
+            'form-name': 'contact',
+            name:        f.name.value.trim(),
+            email:       f.email.value.trim(),
+            company:     f.company.value.trim() || '',
+            role:        f.role.value || '',
+            service:     f.service.value,
+            budget:      f.budget.value || '',
+            timeline:    f.timeline.value || '',
+            message:     f.message.value.trim(),
+            }),
+        });
 
           if (res.ok) {
             setStatus('success', "We've received your message and will be in touch shortly.");
