@@ -61,7 +61,7 @@
       font-size: 11px;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      color: #000000;
+      color: #e5e2e3;
       font-weight: 600;
     }
 
@@ -219,6 +219,10 @@
     .char-count.warn {
       color: #ffb4ab;
     }
+
+    .hidden {
+      display: none;
+    }
   </style>
 </head>
 
@@ -253,10 +257,6 @@
     <!-- Hero -->
     <section class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center min-h-[60vh]">
       <div class="lg:col-span-6 space-y-6">
-        <!-- <div class="inline-flex items-center gap-2 px-3 py-1 rounded bg-surface-container-highest border border-outline-variant/30 font-code-sm text-code-sm text-primary">
-<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-                    HMLabs — Engineering production-grade systems for modern businesses
-                </div> -->
         <h1 class="font-headline-xl text-headline-xl text-on-surface leading-tight">
           We build <span class="text-primary italic">AI agents and systems</span> that actually ship.
         </h1>
@@ -290,7 +290,6 @@
             <div class="flex gap-4"><span class="text-outline/40 select-none">1</span><span><span
                   class="text-primary">class</span> <span class="text-primary-container">HMLabs</span>:</span></div>
             <div class="flex gap-4"><span class="text-outline/40 select-none">2</span><span></span></div>
-            <!-- <div class="flex gap-4"><span class="text-outline/40 select-none">3</span><span class="pl-4">team = [<span class="text-secondary">"Muhtashim"</span>, <span class="text-secondary">"Hamza"</span>]</span></div> -->
             <div class="flex gap-4"><span class="text-outline/40 select-none">4</span><span class="pl-4">focus =
                 [</span></div>
             <div class="flex gap-4"><span class="text-outline/40 select-none">5</span><span
@@ -786,18 +785,39 @@
               <span id="form-status-msg"></span>
             </div>
 
-            <div id="contact-form" class="space-y-5">
+            <!-- =====================================================
+                 Netlify Forms: the data-netlify="true" attribute on
+                 this <form> tag is what Netlify detects at deploy
+                 time. The hidden input[name="form-name"] is required
+                 for the AJAX submission to work correctly.
+                 ===================================================== -->
+            <form
+              id="contact-form"
+              name="contact"
+              method="POST"
+              data-netlify="true"
+              netlify-honeypot="bot-field"
+              class="space-y-5"
+            >
+              <!-- Required hidden fields for Netlify -->
+              <input type="hidden" name="form-name" value="contact" />
+
+              <!-- Honeypot spam trap — hidden from real users -->
+              <p class="hidden">
+                <label>Don't fill this out: <input name="bot-field" /></label>
+              </p>
+
               <!-- Name + Email -->
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div class="form-field">
                   <label class="form-label" for="cf-name">Your name <span class="req">*</span></label>
-                  <input id="cf-name" class="form-input" type="text" placeholder="Hamza Mirza" autocomplete="name"
+                  <input id="cf-name" name="name" class="form-input" type="text" placeholder="Hamza Mirza" autocomplete="name"
                     maxlength="80" />
                   <div class="form-err-msg" id="err-name">Please enter your name.</div>
                 </div>
                 <div class="form-field">
                   <label class="form-label" for="cf-email">Email <span class="req">*</span></label>
-                  <input id="cf-email" class="form-input" type="email" placeholder="you@company.com"
+                  <input id="cf-email" name="email" class="form-input" type="email" placeholder="you@company.com"
                     autocomplete="email" maxlength="120" />
                   <div class="form-err-msg" id="err-email">Enter a valid email address.</div>
                 </div>
@@ -807,12 +827,12 @@
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div class="form-field">
                   <label class="form-label" for="cf-company">Company / Organisation</label>
-                  <input id="cf-company" class="form-input" type="text" placeholder="Acme Corp (optional)"
+                  <input id="cf-company" name="company" class="form-input" type="text" placeholder="Acme Corp (optional)"
                     maxlength="80" />
                 </div>
                 <div class="form-field">
                   <label class="form-label" for="cf-role">Your role</label>
-                  <select id="cf-role" class="form-select">
+                  <select id="cf-role" name="role" class="form-select">
                     <option value="">— Select role —</option>
                     <option>Founder / CEO</option>
                     <option>CTO / Tech Lead</option>
@@ -829,7 +849,7 @@
               <!-- Service -->
               <div class="form-field">
                 <label class="form-label" for="cf-service">What do you need? <span class="req">*</span></label>
-                <select id="cf-service" class="form-select">
+                <select id="cf-service" name="service" class="form-select">
                   <option value="">— Choose a service —</option>
                   <optgroup label="AI &amp; Agents">
                     <option>AI / LLM Product Development</option>
@@ -864,7 +884,7 @@
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div class="form-field">
                   <label class="form-label" for="cf-budget">Rough budget</label>
-                  <select id="cf-budget" class="form-select">
+                  <select id="cf-budget" name="budget" class="form-select">
                     <option value="">— Not sure yet —</option>
                     <option>Under $5k</option>
                     <option>$5k – $15k</option>
@@ -876,7 +896,7 @@
                 </div>
                 <div class="form-field">
                   <label class="form-label" for="cf-timeline">Ideal start</label>
-                  <select id="cf-timeline" class="form-select">
+                  <select id="cf-timeline" name="timeline" class="form-select">
                     <option value="">— Flexible —</option>
                     <option>ASAP</option>
                     <option>Within 2 weeks</option>
@@ -890,10 +910,10 @@
               <!-- Message -->
               <div class="form-field">
                 <label class="form-label" for="cf-message">Tell us about the project <span class="req">*</span></label>
-                <textarea id="cf-message" class="form-textarea"
+                <textarea id="cf-message" name="message" class="form-textarea"
                   placeholder="What are you building? What problem does it solve? Any tech preferences or constraints?"
-                  maxlength="1200"></textarea>
-                <div class="char-count" id="char-count">0 / 1200</div>
+                  maxlength="5000"></textarea>
+                <div class="char-count" id="char-count">0 / 5000</div>
                 <div class="form-err-msg" id="err-message">Please describe your project (min 20 characters).</div>
               </div>
 
@@ -901,12 +921,12 @@
               <div class="flex items-center justify-between pt-2 gap-4 flex-wrap">
                 <p class="font-code-sm text-[11px] text-outline">Fields marked <span class="text-primary">*</span> are
                   required</p>
-                <button id="cf-submit" class="form-submit-btn">
+                <button id="cf-submit" type="button" class="form-submit-btn">
                   <span class="material-symbols-outlined text-[17px]" id="submit-icon">send</span>
                   <span id="submit-label">Send message</span>
                 </button>
               </div>
-            </div><!-- /contact-form -->
+            </form><!-- /contact-form -->
           </div>
 
         </div>
@@ -996,8 +1016,6 @@
       const group = new THREE.Group();
       scene.add(group);
 
-      // thin wireframe sphere so icons read as a connected structure, not floating balls
-      // depth-faded shader: edges further from camera (back of sphere) fade out
       const wireGeo = new THREE.IcosahedronGeometry(6.6, 2);
       const wireMat = new THREE.ShaderMaterial({
         transparent: true,
@@ -1015,7 +1033,6 @@
                 uniform vec3 color;
                 varying float vDepth;
                 void main() {
-                    // near edges brighter, far edges fade toward near-zero
                     float t = smoothstep(10.0, 20.0, vDepth);
                     float opacity = mix(0.22, 0.03, t);
                     gl_FragColor = vec4(color, opacity);
@@ -1033,14 +1050,12 @@
         ctx.lineJoin = 'round';
 
         if (type === 'stripe') {
-          // simplified stripe "S" wordmark glyph
           ctx.font = 'bold 48px "Inter", "Helvetica Neue", Arial, sans-serif';
-          ctx.letterSpacing = '-1px'; // Recreates Stripe's tight letter spacing
+          ctx.letterSpacing = '-1px';
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
           ctx.fillText('stripe', cx, cy + 2);
         } else if (type === 'langgraph') {
-          // simple node-graph glyph: three connected nodes
           ctx.lineWidth = 3;
           const pts = [
             { x: cx, y: cy - 26 },
@@ -1110,7 +1125,6 @@
         return sprite;
       }
 
-      // Fibonacci sphere distribution for even spacing
       const radius = 6.6;
       const n = skills.length;
       skills.forEach((skill, i) => {
@@ -1124,7 +1138,6 @@
         group.add(sprite);
       });
 
-      // drag to rotate, with momentum
       let isDragging = false;
       let prevX = 0, prevY = 0;
       let velX = 0, velY = 0;
@@ -1167,7 +1180,6 @@
         requestAnimationFrame(animate);
         if (!isDragging) {
           if (isIdle) {
-            // gently settle into a constant slow spin
             velX += (idleSpinSpeed - velX) * 0.02;
             velY += (0 - velY) * 0.05;
           } else {
@@ -1189,7 +1201,6 @@
       });
       }
 
-      // Lazy load sphere when section comes into view
       const observer = new IntersectionObserver(entries => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
@@ -1204,35 +1215,32 @@
   </script>
 
   <script>
-    /* ── HM Labs Contact Form ── */
+    /* ── HM Labs Contact Form — Netlify Forms via AJAX ── */
     (function () {
-      const API = 'http://localhost:8000/api/contact';
-      const SOURCE = 'index';
-
       const f = {
-        name: document.getElementById('cf-name'),
-        email: document.getElementById('cf-email'),
-        company: document.getElementById('cf-company'),
-        role: document.getElementById('cf-role'),
-        service: document.getElementById('cf-service'),
-        budget: document.getElementById('cf-budget'),
+        name:     document.getElementById('cf-name'),
+        email:    document.getElementById('cf-email'),
+        company:  document.getElementById('cf-company'),
+        role:     document.getElementById('cf-role'),
+        service:  document.getElementById('cf-service'),
+        budget:   document.getElementById('cf-budget'),
         timeline: document.getElementById('cf-timeline'),
-        message: document.getElementById('cf-message'),
+        message:  document.getElementById('cf-message'),
       };
-      const btn = document.getElementById('cf-submit');
-      const btnLabel = document.getElementById('submit-label');
-      const btnIcon = document.getElementById('submit-icon');
-      const statusBox = document.getElementById('form-status');
-      const statusMsg = document.getElementById('form-status-msg');
+      const btn        = document.getElementById('cf-submit');
+      const btnLabel   = document.getElementById('submit-label');
+      const btnIcon    = document.getElementById('submit-icon');
+      const statusBox  = document.getElementById('form-status');
+      const statusMsg  = document.getElementById('form-status-msg');
       const statusIcon = document.getElementById('form-status-icon');
-      const charCount = document.getElementById('char-count');
+      const charCount  = document.getElementById('char-count');
 
-      if (!btn) return; // guard if section not found
+      if (!btn) return;
 
       f.message.addEventListener('input', () => {
         const len = f.message.value.length;
-        charCount.textContent = len + ' / 1200';
-        charCount.classList.toggle('warn', len > 1100);
+        charCount.textContent = len + ' / 5000';
+        charCount.classList.toggle('warn', len > 4800);
       });
 
       function showErr(id, msg) {
@@ -1252,10 +1260,14 @@
       function validate() {
         clearErrs();
         let ok = true;
-        if (!f.name.value.trim()) { showErr('name', 'Please enter your name.'); ok = false; }
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email.value.trim())) { showErr('email', 'Enter a valid email address.'); ok = false; }
-        if (!f.service.value) { showErr('service', 'Please select a service.'); ok = false; }
-        if (f.message.value.trim().length < 20) { showErr('message', 'Please describe your project (min 20 characters).'); ok = false; }
+        if (!f.name.value.trim())
+          { showErr('name', 'Please enter your name.'); ok = false; }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email.value.trim()))
+          { showErr('email', 'Enter a valid email address.'); ok = false; }
+        if (!f.service.value)
+          { showErr('service', 'Please select a service.'); ok = false; }
+        if (f.message.value.trim().length < 20)
+          { showErr('message', 'Please describe your project (min 20 characters).'); ok = false; }
         return ok;
       }
       function setStatus(type, msg) {
@@ -1267,42 +1279,65 @@
 
       btn.addEventListener('click', async () => {
         if (!validate()) return;
+
         btn.disabled = true;
         btnLabel.textContent = 'Sending…';
         btnIcon.textContent = 'hourglass_empty';
 
-        const payload = {
-          name: f.name.value.trim(),
-          email: f.email.value.trim(),
-          company: f.company.value.trim() || null,
-          role: f.role.value || null,
-          service: f.service.value,
-          budget: f.budget.value || null,
-          timeline: f.timeline.value || null,
-          message: f.message.value.trim(),
-          source_page: SOURCE,
-        };
+        // Encode as application/x-www-form-urlencoded — required by Netlify Forms
+        const formData = new FormData();
+        formData.append('form-name', 'contact');
+        formData.append('name',      f.name.value.trim());
+        formData.append('email',     f.email.value.trim());
+        formData.append('company',   f.company.value.trim() || '');
+        formData.append('role',      f.role.value || '');
+        formData.append('service',   f.service.value);
+        formData.append('budget',    f.budget.value || '');
+        formData.append('timeline',  f.timeline.value || '');
+        formData.append('message',   f.message.value.trim());
 
         try {
-          const res = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-          const data = await res.json();
+          const res = await fetch('/', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body:    new URLSearchParams(formData).toString(),
+          });
+
           if (res.ok) {
-            setStatus('success', data.message || "We\'ve received your message and will be in touch shortly.");
-            document.getElementById('contact-form').style.opacity = '0.4';
-            document.getElementById('contact-form').style.pointerEvents = 'none';
+            setStatus('success', "We've received your message and will be in touch shortly.");
+            const form = document.getElementById('contact-form');
+            form.style.opacity = '0.4';
+            form.style.pointerEvents = 'none';
             btnLabel.textContent = 'Sent';
             btnIcon.textContent = 'check';
+
+            // Reset after 5 seconds
+            setTimeout(() => {
+              statusBox.className = 'form-status';
+              form.style.opacity = '1';
+              form.style.pointerEvents = 'auto';
+              btn.disabled = false;
+              btnLabel.textContent = 'Send message';
+              btnIcon.textContent = 'send';
+              Object.values(f).forEach(field => { field.value = ''; });
+              charCount.textContent = '0 / 5000';
+            }, 5000);
           } else {
-            setStatus('err-state', data.detail || 'Something went wrong. Please try again.');
-            btn.disabled = false; btnLabel.textContent = 'Send message'; btnIcon.textContent = 'send';
+            setStatus('err-state', 'Something went wrong. Please try again or email us directly.');
+            btn.disabled = false;
+            btnLabel.textContent = 'Send message';
+            btnIcon.textContent = 'send';
           }
         } catch (e) {
           setStatus('err-state', 'Could not reach the server. Please email us at hello@hmlabs.dev');
-          btn.disabled = false; btnLabel.textContent = 'Send message'; btnIcon.textContent = 'send';
+          btn.disabled = false;
+          btnLabel.textContent = 'Send message';
+          btnIcon.textContent = 'send';
         }
       });
     })();
   </script>
+
 </body>
 
 </html>
