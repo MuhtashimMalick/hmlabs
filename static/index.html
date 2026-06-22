@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>HM Labs | AI Automation, IoT &amp; Full-Stack Engineering</title>
+  <link rel="stylesheet" href="css/tailwind.css">
+  <link rel="stylesheet" href="fonts/fonts.css">
+  <script src="js/three.min.js"></script>
+  <style>
+    ::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #404040;
+      border-radius: 2px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .glass-panel {
+      background: rgba(18, 18, 20, 0.8);
+      backdrop-filter: blur(12px);
+      border: 1px solid #262626;
+    }
+
+    @keyframes cursor-blink {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0;
+      }
+    }
+
+    .cursor {
+      animation: cursor-blink 1s infinite;
+    }
+
+    .case-icon {
+      font-size: 56px;
+      opacity: 0.9;
+    }
+
+    /* ── Contact Form ── */
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #000000;
+      font-weight: 600;
+    }
+
+    .form-label .req {
+      color: #d0bcff;
+    }
+
+    .form-input,
+    .form-select,
+    .form-textarea {
+      background: #ffffff;
+      border: 1px solid #cccccc;
+      border-radius: 6px;
+      color: #000000;
+      font-family: 'Geist', sans-serif;
+      font-size: 15px;
+      padding: 10px 14px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      width: 100%;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    .form-select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333333' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 36px;
+      cursor: pointer;
+    }
+
+    .form-select option {
+      background: #ffffff;
+      color: #000000;
+    }
+
+    .form-textarea {
+      resize: vertical;
+      min-height: 110px;
+      line-height: 1.6;
+    }
+
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
+      border-color: #3c0091;
+      box-shadow: 0 0 0 3px rgba(60, 0, 145, 0.15);
+    }
+
+    .form-input::placeholder,
+    .form-textarea::placeholder {
+      color: #888888;
+    }
+
+    .form-input.err,
+    .form-select.err,
+    .form-textarea.err {
+      border-color: #d32f2f;
+      box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.15);
+    }
+
+    .form-err-msg {
+      font-size: 12px;
+      color: #d32f2f;
+      font-family: 'JetBrains Mono', monospace;
+      margin-top: 2px;
+      display: none;
+      font-weight: 600;
+    }
+
+    .form-err-msg.show {
+      display: block;
+    }
+
+    .char-count {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: #666666;
+      text-align: right;
+      margin-top: 3px;
+      transition: color 0.2s;
+    }
+
+    .char-count.warn {
+      color: #d32f2f;
+      font-weight: 600;
+    }
+
+    .form-submit-btn {
+      background: #d0bcff;
+      color: #3c0091;
+      border: none;
+      border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      padding: 13px 28px;
+      cursor: pointer;
+      transition: transform 0.15s, opacity 0.15s, box-shadow 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .form-submit-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 24px rgba(208, 188, 255, 0.3);
+    }
+
+    .form-submit-btn:active {
+      transform: translateY(0);
+    }
+
+    .form-submit-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .form-status {
+      border-radius: 6px;
+      padding: 12px 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      display: none;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .form-status.success {
+      display: flex;
+      background: rgba(76, 215, 246, 0.08);
+      border: 1px solid rgba(76, 215, 246, 0.3);
+      color: #4cd7f6;
+    }
+
+    .form-status.err-state {
+      display: flex;
+      background: rgba(255, 180, 171, 0.08);
+      border: 1px solid rgba(255, 180, 171, 0.3);
+      color: #ffb4ab;
+    }
+
+    .char-count {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: #494454;
+      text-align: right;
+      margin-top: 3px;
+      transition: color 0.2s;
+    }
+
+    .char-count.warn {
+      color: #ffb4ab;
+    }
+  </style>
+</head>
+
+<body
+  class="bg-background text-on-background font-body-md selection:bg-primary-container selection:text-on-primary-container overflow-x-hidden">
+
+  <header
+    class="bg-surface/80 dark:bg-surface/80 backdrop-blur-md docked full-width top-0 z-50 sticky border-b border-outline-variant/30 h-16">
+    <nav class="flex justify-between items-center w-full px-margin-desktop max-w-container-max mx-auto h-full">
+      <div class="flex items-center gap-2">
+        <span class="font-headline-md text-headline-md font-bold tracking-tighter text-on-surface">HM Labs</span>
+      </div>
+      <div class="hidden md:flex items-center gap-8">
+        <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors"
+          href="#services">Services</a>
+        <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors"
+          href="#about">About</a>
+        <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors"
+          href="#projects">Projects</a>
+        <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors"
+          href="#contact">Contact</a>
+      </div>
+      <div class="flex items-center gap-4">
+        <a href="mailto:hello@hmlabs.dev"
+          class="bg-primary-container text-on-primary-container px-4 py-1.5 rounded-lg font-label-md text-label-md font-bold hover:bg-primary-container/80 transition-all duration-300">Connect</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-12 space-y-32">
+
+    <!-- Hero -->
+    <section class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center min-h-[60vh]">
+      <div class="lg:col-span-6 space-y-6">
+        <!-- <div class="inline-flex items-center gap-2 px-3 py-1 rounded bg-surface-container-highest border border-outline-variant/30 font-code-sm text-code-sm text-primary">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                    HMLabs — Engineering production-grade systems for modern businesses
+                </div> -->
+        <h1 class="font-headline-xl text-headline-xl text-on-surface leading-tight">
+          We build <span class="text-primary italic">AI agents and systems</span> that actually ship.
+        </h1>
+        <p class="font-body-lg text-body-lg text-on-surface-variant max-w-lg">
+          Two engineers, six shipped systems — no account managers, no handoffs. Whoever you talk to is whoever builds
+          it.
+        </p>
+        <div class="flex flex-wrap gap-4 pt-4">
+          <div class="flex flex-col gap-1 px-4 py-2 bg-surface-container-low border border-outline-variant/20">
+            <span class="font-code-sm text-[10px] text-outline uppercase tracking-widest">Shipped Projects</span>
+            <span class="font-code-sm text-code-sm text-on-surface">6</span>
+          </div>
+          <div class="flex flex-col gap-1 px-4 py-2 bg-surface-container-low border border-outline-variant/20">
+            <span class="font-code-sm text-[10px] text-outline uppercase tracking-widest">Team Size</span>
+            <span class="font-code-sm text-code-sm text-secondary">2, both hands-on</span>
+          </div>
+        </div>
+      </div>
+      <div class="lg:col-span-6 relative h-[450px]">
+        <div class="absolute inset-0 bg-primary/5 blur-[100px] rounded-full"></div>
+        <div class="glass-panel rounded-xl overflow-hidden shadow-2xl relative z-10">
+          <div class="bg-[#1e1e20] px-4 py-2 flex items-center gap-2 border-b border-[#262626]">
+            <div class="flex gap-1.5">
+              <div class="w-2.5 h-2.5 rounded-full bg-[#ff5f56]"></div>
+              <div class="w-2.5 h-2.5 rounded-full bg-[#ffbd2e]"></div>
+              <div class="w-2.5 h-2.5 rounded-full bg-[#27c93f]"></div>
+            </div>
+            <span class="text-[12px] font-code-sm text-outline ml-4">stack.py</span>
+          </div>
+          <div class="p-6 font-code-sm text-code-sm leading-relaxed text-on-surface-variant overflow-x-auto">
+            <div class="flex gap-4"><span class="text-outline/40 select-none">1</span><span><span
+                  class="text-primary">class</span> <span class="text-primary-container">HMLabs</span>:</span></div>
+            <div class="flex gap-4"><span class="text-outline/40 select-none">2</span><span></span></div>
+            <!-- <div class="flex gap-4"><span class="text-outline/40 select-none">3</span><span class="pl-4">team = [<span class="text-secondary">"Muhtashim"</span>, <span class="text-secondary">"Hamza"</span>]</span></div> -->
+            <div class="flex gap-4"><span class="text-outline/40 select-none">4</span><span class="pl-4">focus =
+                [</span></div>
+            <div class="flex gap-4"><span class="text-outline/40 select-none">5</span><span
+                class="pl-8 text-secondary">"Voice AI agents",</span></div>
+            <div class="flex gap-4"><span class="text-outline/40 select-none">6</span><span
+                class="pl-8 text-secondary">"Agentic automation",</span></div>
+            <div class="flex gap-4"><span class="text-outline/40 select-none">7</span><span
+                class="pl-8 text-secondary">"IoT platforms",</span></div>
+            <div class="flex gap-4"><span class="text-outline/40 select-none">8</span><span
+                class="pl-8 text-secondary">"Full-stack systems",</span></div>
+            <div class="flex gap-4"><span class="text-outline/40 select-none">9</span><span class="pl-4">]</span></div>
+            <div class="flex gap-4"><span class="text-outline/40 select-none">10</span><span class="pl-4">approach =
+                <span class="text-secondary">"ship, then iterate"</span></span></div>
+            <div class="flex gap-4 mt-4 animate-pulse"><span class="text-outline/40 select-none">11</span><span
+                class="text-primary">_</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- About -->
+    <section class="space-y-12" id="about">
+      <h2 class="font-headline-lg text-headline-lg flex items-center gap-3">
+        <span class="text-primary">$</span> cat about.md
+      </h2>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+
+        <!-- Left: statement -->
+        <div class="lg:col-span-7 space-y-8">
+          <div class="space-y-5">
+            <h3 class="font-headline-xl text-headline-xl text-on-surface leading-tight">Engineering that<br /><span
+                class="text-primary italic">ships and holds.</span></h3>
+            <p class="font-body-lg text-body-lg text-on-surface-variant leading-relaxed max-w-xl">
+              HM Labs is a focused engineering practice specializing in backend systems, AI automation, and
+              production-grade integrations. We work directly with clients — no layers, no handoffs — from initial
+              architecture through deployment and beyond.
+            </p>
+            <p class="font-body-lg text-body-lg text-on-surface-variant leading-relaxed max-w-xl">
+              Every system we build is designed to run reliably in production, not just pass a demo. We've delivered
+              across industries — supply chain, e-commerce, cybersecurity, and IoT — for clients in the US, Australia,
+              and beyond.
+            </p>
+          </div>
+
+          <!-- 3 value props in a row -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+            <div class="space-y-2 border-t border-primary/40 pt-4">
+              <span class="material-symbols-outlined text-primary text-[22px]">verified</span>
+              <div class="font-label-md text-label-md font-bold text-on-surface uppercase tracking-wider">
+                Production-first</div>
+              <p class="font-body-md text-body-md text-on-surface-variant">Built to run under real load, not just pass
+                review.</p>
+            </div>
+            <div class="space-y-2 border-t border-secondary/40 pt-4">
+              <span class="material-symbols-outlined text-secondary text-[22px]">handshake</span>
+              <div class="font-label-md text-label-md font-bold text-on-surface uppercase tracking-wider">Direct
+                engagement</div>
+              <p class="font-body-md text-body-md text-on-surface-variant">Whoever you talk to is whoever builds it.</p>
+            </div>
+            <div class="space-y-2 border-t border-primary-container/60 pt-4">
+              <span class="material-symbols-outlined text-primary-container text-[22px]">public</span>
+              <div class="font-label-md text-label-md font-bold text-on-surface uppercase tracking-wider">Global clients
+              </div>
+              <p class="font-body-md text-body-md text-on-surface-variant">Delivered for businesses across the US, AU,
+                and beyond.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: stat cards -->
+        <div class="lg:col-span-5 grid grid-cols-2 gap-4">
+          <div class="glass-panel rounded-xl p-6 space-y-1 col-span-2">
+            <div class="font-code-sm text-[10px] text-outline uppercase tracking-widest mb-3">What we do</div>
+            <div class="space-y-2">
+              <div class="flex items-center gap-3 font-body-md text-body-md text-on-surface-variant">
+                <span class="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0"></span> Backend systems & API
+                integrations
+              </div>
+              <div class="flex items-center gap-3 font-body-md text-body-md text-on-surface-variant">
+                <span class="w-1.5 h-1.5 rounded-full bg-secondary flex-shrink-0"></span> AI agents & agentic automation
+              </div>
+              <div class="flex items-center gap-3 font-body-md text-body-md text-on-surface-variant">
+                <span class="w-1.5 h-1.5 rounded-full bg-primary-container flex-shrink-0"></span> ERP migrations & data
+                pipelines
+              </div>
+              <div class="flex items-center gap-3 font-body-md text-body-md text-on-surface-variant">
+                <span class="w-1.5 h-1.5 rounded-full bg-tertiary flex-shrink-0"></span> IoT platforms & connected
+                systems
+              </div>
+            </div>
+          </div>
+
+          <div class="glass-panel rounded-xl p-6 space-y-1">
+            <div class="font-code-sm text-[10px] text-outline uppercase tracking-widest">Systems shipped</div>
+            <div class="font-headline-xl text-headline-xl text-primary font-bold">6</div>
+            <div class="font-body-md text-[13px] text-on-surface-variant">in production</div>
+          </div>
+
+          <div class="glass-panel rounded-xl p-6 space-y-1">
+            <div class="font-code-sm text-[10px] text-outline uppercase tracking-widest">Client regions</div>
+            <div class="font-headline-xl text-headline-xl text-secondary font-bold">3+</div>
+            <div class="font-body-md text-[13px] text-on-surface-variant">US · AU · PK</div>
+          </div>
+
+          <div class="glass-panel rounded-xl p-6 space-y-1 col-span-2">
+            <div class="font-code-sm text-[10px] text-outline uppercase tracking-widest mb-2">Based in</div>
+            <div class="flex items-center gap-3">
+              <span class="material-symbols-outlined text-primary-container text-[20px]">location_on</span>
+              <span class="font-body-lg text-body-lg text-on-surface">Karachi, Pakistan — working globally,
+                remote-first</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Services -->
+    <section class="space-y-12" id="services">
+      <h2 class="font-headline-lg text-headline-lg flex items-center gap-3">
+        <span class="text-primary">$</span> bin/services --list
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div
+          class="glass-panel p-8 rounded-xl border-l-4 border-primary hover:bg-surface-container-high transition-colors group">
+          <span
+            class="material-symbols-outlined text-primary text-4xl mb-6 group-hover:scale-110 transition-transform block">graphic_eq</span>
+          <h3 class="font-headline-md text-on-surface mb-3">Voice AI Agents</h3>
+          <p class="font-body-md text-on-surface-variant">Real-time conversational agents — speech-to-text, LLM
+            reasoning, and natural voice synthesis wired into one pipeline.</p>
+        </div>
+        <div
+          class="glass-panel p-8 rounded-xl border-l-4 border-secondary hover:bg-surface-container-high transition-colors group">
+          <span
+            class="material-symbols-outlined text-secondary text-4xl mb-6 group-hover:scale-110 transition-transform block">smart_toy</span>
+          <h3 class="font-headline-md text-on-surface mb-3">AI Automation &amp; Agentic Systems</h3>
+          <p class="font-body-md text-on-surface-variant">Multi-agent workflows and RAG pipelines that automate real
+            decisions, not just chatbot demos.</p>
+        </div>
+        <div
+          class="glass-panel p-8 rounded-xl border-l-4 border-primary-container hover:bg-surface-container-high transition-colors group">
+          <span
+            class="material-symbols-outlined text-primary-container text-4xl mb-6 group-hover:scale-110 transition-transform block">sensors</span>
+          <h3 class="font-headline-md text-on-surface mb-3">IoT Platforms</h3>
+          <p class="font-body-md text-on-surface-variant">Connected-device management systems — from reservation logic
+            to real-time device control and monitoring.</p>
+        </div>
+        <div
+          class="glass-panel p-8 rounded-xl border-l-4 border-tertiary hover:bg-surface-container-high transition-colors group">
+          <span
+            class="material-symbols-outlined text-tertiary text-4xl mb-6 group-hover:scale-110 transition-transform block">dns</span>
+          <h3 class="font-headline-md text-on-surface mb-3">Full-Stack Development</h3>
+          <p class="font-body-md text-on-surface-variant">FastAPI/Django backends, React frontends, and the unglamorous
+            integration work that keeps systems talking to each other.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Projects -->
+    <section class="space-y-12" id="projects">
+      <h2 class="font-headline-lg text-headline-lg flex items-center gap-3">
+        <span class="text-primary">$</span> ls -la /projects
+      </h2>
+
+      <!-- Carousel wrapper -->
+      <div class="relative">
+        <!-- Prev / Next buttons -->
+        <button id="proj-prev" aria-label="Previous"
+          class="hidden md:flex absolute -left-5 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-surface-container-high border border-outline-variant/40 items-center justify-center text-on-surface hover:border-primary hover:text-primary transition-colors shadow-lg">
+          <span class="material-symbols-outlined text-[20px]">chevron_left</span>
+        </button>
+        <button id="proj-next" aria-label="Next"
+          class="hidden md:flex absolute -right-5 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-surface-container-high border border-outline-variant/40 items-center justify-center text-on-surface hover:border-primary hover:text-primary transition-colors shadow-lg">
+          <span class="material-symbols-outlined text-[20px]">chevron_right</span>
+        </button>
+
+        <!-- Scrollable track -->
+        <div id="proj-track"
+          class="flex gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-4 cursor-grab active:cursor-grabbing select-none"
+          style="scrollbar-width:none; -ms-overflow-style:none;">
+
+          <!-- AttackEye -->
+          <div
+            class="glass-panel rounded-xl overflow-hidden flex flex-col group hover:border-primary transition-colors flex-shrink-0 snap-start w-[320px] md:w-[360px]">
+            <div class="h-40 relative overflow-hidden bg-surface-container flex items-center justify-center">
+              <span class="material-symbols-outlined case-icon text-primary">shield</span>
+            </div>
+            <div class="p-6 space-y-4 flex-1 flex flex-col">
+              <div class="flex justify-between items-start">
+                <h3 class="font-headline-md text-headline-md text-on-surface">AttackEye</h3>
+                <span class="font-code-sm text-[10px] text-secondary border border-secondary px-2 py-0.5 rounded">Live
+                  Product</span>
+              </div>
+              <p class="font-body-md text-body-md text-on-surface-variant">External Attack Surface Management platform —
+                domain enumeration, port/vulnerability scanning, dark-web monitoring, and brand protection. Built out of
+                NED University's NCCS.</p>
+              <div class="flex flex-wrap gap-2 mt-auto">
+                <span
+                  class="font-code-sm text-[11px] bg-surface-container-highest px-2 py-1 rounded text-primary">Amass</span>
+                <span
+                  class="font-code-sm text-[11px] bg-surface-container-highest px-2 py-1 rounded text-primary">Nmap</span>
+                <span
+                  class="font-code-sm text-[11px] bg-surface-container-highest px-2 py-1 rounded text-primary">Sigma.js</span>
+              </div>
+              <div class="flex gap-4 pt-1">
+                <a href="https://attackeye.ai" target="_blank"
+                  class="text-secondary font-code-sm text-[12px] hover:underline">attackeye.ai →</a>
+                <a href="projects.html#attackeye" class="text-primary/60 font-code-sm text-[12px] hover:underline">Case
+                  study →</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- EzeHome -->
+          <div
+            class="glass-panel rounded-xl overflow-hidden flex flex-col group hover:border-primary transition-colors flex-shrink-0 snap-start w-[320px] md:w-[360px]">
+            <div class="h-40 relative overflow-hidden bg-surface-container flex items-center justify-center">
+              <span class="material-symbols-outlined case-icon text-secondary">villa</span>
+            </div>
+            <div class="p-6 space-y-4 flex-1 flex flex-col">
+              <div class="flex justify-between items-start">
+                <h3 class="font-headline-md text-headline-md text-on-surface">EzeHome</h3>
+                <span class="font-code-sm text-[10px] text-primary border border-primary px-2 py-0.5 rounded">Live
+                  Product</span>
+              </div>
+              <p class="font-body-md text-body-md text-on-surface-variant">IoT-based property management platform —
+                reservations, listings, and connected-device management for rental and sale properties.</p>
+              <div class="flex flex-wrap gap-2 mt-auto">
+                <span
+                  class="font-code-sm text-[11px] bg-surface-container-highest px-2 py-1 rounded text-primary">IoT</span>
+                <span
+                  class="font-code-sm text-[11px] bg-surface-container-highest px-2 py-1 rounded text-primary">FastAPI</span>
+                <span
+                  class="font-code-sm text-[11px] bg-surface-container-highest px-2 py-1 rounded text-primary">React</span>
+              </div>
+              <div class="flex gap-4 pt-1">
+                <a href="https://ezehome.net" target="_blank"
+                  class="text-secondary font-code-sm text-[12px] hover:underline">ezehome.net →</a>
+                <a href="projects.html#ezehome" class="text-primary/60 font-code-sm text-[12px] hover:underline">Case
+                  study →</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- MorfBot -->
+          <div
+            class="glass-panel rounded-xl overflow-hidden flex flex-col group hover:border-primary transition-colors flex-shrink-0 snap-start w-[320px] md:w-[360px]">
+            <div class="h-40 relative overflow-hidden bg-surface-container flex items-center justify-center">
+              <span class="material-symbols-outlined case-icon text-primary-container">graphic_eq</span>
+            </div>
+            <div class="p-6 space-y-4 flex-1 flex flex-col">
+              <div class="flex justify-between items-start">
+                <h3 class="font-headline-md text-headline-md text-on-surface">MorfBot</h3>
+                <span class="font-code-sm text-[10px] text-secondary border border-secondary px-2 py-0.5 rounded">In
+                  Production</span>
+              </div>
+              <p class="font-body-md text-body-md text-on-surface-variant">Real-time voice AI sales agent — Twilio
+                Conversation Relay, Deepgram STT, ElevenLabs TTS, and an LLM reasoning loop wired into one pipeline.</p>
+              <div class="flex flex-wrap gap-2 mt-auto">
+                <span
+                  class="font-code-sm text-[11px] bg-surface-container-highest px-2 py-1 rounded text-primary">Twilio</span>
+                <span
+                  class="font-code-sm text-[11px] bg-surface-container-highest px-2 py-1 rounded text-primary">Deepgram</span>
+                <span
+                  class="font-code-sm text-[11px] bg-surface-container-highest px-2 py-1 rounded text-primary">ElevenLabs</span>
+              </div>
+              <a href="projects.html#morfbot" class="text-secondary font-code-sm text-[12px] hover:underline pt-1">Case
+                study →</a>
+            </div>
+          </div>
+
+          <!-- SOS ↔ StockTrim -->
+          <div
+            class="glass-panel rounded-xl overflow-hidden flex flex-col group hover:border-primary transition-colors flex-shrink-0 snap-start w-[320px] md:w-[360px]">
+            <div class="h-40 relative overflow-hidden bg-surface-container flex items-center justify-center">
+              <span class="material-symbols-outlined case-icon text-tertiary">sync_alt</span>
+            </div>
+            <div class="p-6 space-y-4 flex-1 flex flex-col">
+              <div class="flex justify-between items-start">
+                <h3 class="font-headline-md text-headline-md text-on-surface">SOS ↔ StockTrim Sync</h3>
+                <span class="font-code-sm text-[10px] text-outline border border-outline px-2 py-0.5 rounded">US
+                  Client</span>
+              </div>
+              <p class="font-body-md text-body-md text-on-surface-variant">Fully automated two-way inventory
+                synchronization engine — rate-limit handling, intelligent schema mapping, conflict resolution, and
+                idempotent retry logic across two enterprise platforms.</p>
+              <div class="flex flex-wrap gap-2 mt-auto">
+                <span
+                  class="font-code-sm text-[11px] bg-surface-container-highest px-2 py-1 rounded text-primary">FastAPI</span>
+                <span
+                  class="font-code-sm text-[11px] bg-surface-container-highest px-2 py-1 rounded text-primary">PostgreSQL</span>
+                <span
+                  class="font-code-sm text-[11px] bg-surface-container-highest px-2 py-1 rounded text-primary">Docker</span>
+              </div>
+              <a href="projects.html#sos-stocktrim"
+                class="text-secondary font-code-sm text-[12px] hover:underline pt-1">Case study →</a>
+            </div>
+          </div>
+
+          <!-- Unleashed ERP -->
+          <div
+            class="glass-panel rounded-xl overflow-hidden flex flex-col group hover:border-primary transition-colors flex-shrink-0 snap-start w-[320px] md:w-[360px]">
+            <div class="h-40 relative overflow-hidden bg-surface-container flex items-center justify-center">
+              <span class="material-symbols-outlined case-icon text-secondary">hub</span>
+            </div>
+            <div class="p-6 space-y-4 flex-1 flex flex-col">
+              <div class="flex justify-between items-start">
+                <h3 class="font-headline-md text-headline-md text-on-surface">MYOB → Unleashed ERP</h3>
+                <span class="font-code-sm text-[10px] text-outline border border-outline px-2 py-0.5 rounded">AU
+                  Client</span>
+              </div>
+              <p class="font-body-md text-body-md text-on-surface-variant">Full-scale ERP migration and workflow
+                reconstruction for an Australian distributor — zero data loss, rebuilt operational workflows, and
+                end-to-end business process redesign.</p>
+              <div class="flex flex-wrap gap-2 mt-auto">
+                <span
+                  class="font-code-sm text-[11px] bg-surface-container-highest px-2 py-1 rounded text-primary">Python</span>
+                <span
+                  class="font-code-sm text-[11px] bg-surface-container-highest px-2 py-1 rounded text-primary">Unleashed
+                  API</span>
+                <span class="font-code-sm text-[11px] bg-surface-container-highest px-2 py-1 rounded text-primary">Data
+                  Pipelines</span>
+              </div>
+              <a href="projects.html#unleashed-erp"
+                class="text-secondary font-code-sm text-[12px] hover:underline pt-1">Case study →</a>
+            </div>
+          </div>
+
+          <!-- RAG Sales Agent -->
+          <div
+            class="glass-panel rounded-xl overflow-hidden flex flex-col group hover:border-primary transition-colors flex-shrink-0 snap-start w-[320px] md:w-[360px]">
+            <div class="h-40 relative overflow-hidden bg-surface-container flex items-center justify-center">
+              <span class="material-symbols-outlined case-icon text-primary">support_agent</span>
+            </div>
+            <div class="p-6 space-y-4 flex-1 flex flex-col">
+              <div class="flex justify-between items-start">
+                <h3 class="font-headline-md text-headline-md text-on-surface">RAG Sales Agent</h3>
+                <span
+                  class="font-code-sm text-[10px] text-outline border border-outline px-2 py-0.5 rounded">R&amp;D</span>
+              </div>
+              <p class="font-body-md text-body-md text-on-surface-variant">Agentic RAG application with context-aware
+                retrieval across product and content pages — semantic search plus linked-context expansion.</p>
+              <div class="flex flex-wrap gap-2 mt-auto">
+                <span
+                  class="font-code-sm text-[11px] bg-surface-container-highest px-2 py-1 rounded text-primary">LangGraph</span>
+                <span
+                  class="font-code-sm text-[11px] bg-surface-container-highest px-2 py-1 rounded text-primary">PGVector</span>
+                <span
+                  class="font-code-sm text-[11px] bg-surface-container-highest px-2 py-1 rounded text-primary">OpenAI</span>
+              </div>
+              <a href="projects.html#rag-agent"
+                class="text-secondary font-code-sm text-[12px] hover:underline pt-1">Case study →</a>
+            </div>
+          </div>
+
+        </div><!-- /track -->
+
+        <!-- Dot indicators -->
+        <div id="proj-dots" class="flex justify-center gap-2 mt-6">
+          <button class="proj-dot w-6 h-1.5 rounded-full bg-primary transition-all" data-idx="0"></button>
+          <button class="proj-dot w-1.5 h-1.5 rounded-full bg-outline-variant/50 transition-all" data-idx="1"></button>
+          <button class="proj-dot w-1.5 h-1.5 rounded-full bg-outline-variant/50 transition-all" data-idx="2"></button>
+          <button class="proj-dot w-1.5 h-1.5 rounded-full bg-outline-variant/50 transition-all" data-idx="3"></button>
+          <button class="proj-dot w-1.5 h-1.5 rounded-full bg-outline-variant/50 transition-all" data-idx="4"></button>
+          <button class="proj-dot w-1.5 h-1.5 rounded-full bg-outline-variant/50 transition-all" data-idx="5"></button>
+        </div>
+
+        <!-- View all link -->
+        <div class="text-center mt-6">
+          <a href="projects.html"
+            class="inline-flex items-center gap-2 font-code-sm text-code-sm text-on-surface-variant hover:text-primary transition-colors">
+            <span>View all case studies</span>
+            <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+          </a>
+        </div>
+      </div>
+
+    </section>
+
+    <script>
+        (function () {
+          const track = document.getElementById('proj-track');
+          const dots = document.querySelectorAll('.proj-dot');
+          const prev = document.getElementById('proj-prev');
+          const next = document.getElementById('proj-next');
+          if (!track) return;
+
+          const CARD_W = () => track.querySelector('.glass-panel') ? track.querySelector('.glass-panel').offsetWidth + 24 : 384;
+
+          function activeDot(i) {
+            dots.forEach((d, idx) => {
+              d.classList.toggle('bg-primary', idx === i);
+              d.classList.toggle('w-6', idx === i);
+              d.classList.toggle('bg-outline-variant/50', idx !== i);
+              d.classList.toggle('w-1.5', idx !== i);
+            });
+          }
+
+          function scrollTo(i) {
+            track.scrollTo({ left: i * CARD_W(), behavior: 'smooth' });
+            activeDot(i);
+          }
+
+          dots.forEach(d => d.addEventListener('click', () => scrollTo(+d.dataset.idx)));
+          prev && prev.addEventListener('click', () => {
+            const i = Math.max(0, Math.round(track.scrollLeft / CARD_W()) - 1);
+            scrollTo(i);
+          });
+          next && next.addEventListener('click', () => {
+            const max = dots.length - 1;
+            const i = Math.min(max, Math.round(track.scrollLeft / CARD_W()) + 1);
+            scrollTo(i);
+          });
+
+          // Update dots on scroll
+          track.addEventListener('scroll', () => {
+            const i = Math.round(track.scrollLeft / CARD_W());
+            activeDot(i);
+          }, { passive: true });
+
+          // Drag to scroll (mouse)
+          let dragging = false, startX = 0, scrollStart = 0;
+          track.addEventListener('mousedown', e => { dragging = true; startX = e.pageX; scrollStart = track.scrollLeft; track.style.cursor = 'grabbing'; });
+          window.addEventListener('mousemove', e => { if (!dragging) return; track.scrollLeft = scrollStart - (e.pageX - startX); });
+          window.addEventListener('mouseup', () => { dragging = false; track.style.cursor = 'grab'; });
+        })();
+    </script>
+
+    <!-- Skills Universe -->
+    <section class="space-y-8" id="skills-universe">
+      <h2 class="font-headline-lg text-headline-lg flex items-center gap-3">
+        <span class="text-primary">$</span> render --skills
+      </h2>
+      <div class="relative overflow-hidden sphere-reveal h-[400px] sm:h-[500px] md:h-[600px] lg:h-[720px]">
+        <div id="skills-sphere" class="w-full h-full cursor-grab active:cursor-grabbing"></div>
+        <div
+          class="absolute bottom-6 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full bg-surface-container-lowest/80 backdrop-blur border border-outline-variant/30 font-code-sm text-code-sm text-on-surface-variant flex items-center gap-2 pointer-events-none">
+          <span class="material-symbols-outlined text-[16px]">explore</span> Drag to explore the stack
+        </div>
+      </div>
+    </section>
+
+    <!-- Final CTA + Contact Form -->
+    <section class="pb-20" id="contact">
+      <div class="glass-panel rounded-2xl overflow-hidden relative">
+        <div class="absolute top-0 right-0 w-96 h-96 bg-primary/8 blur-[120px] pointer-events-none"></div>
+        <div class="absolute bottom-0 left-0 w-64 h-64 bg-secondary/6 blur-[100px] pointer-events-none"></div>
+
+        <div class="relative z-10 grid grid-cols-1 lg:grid-cols-5 gap-0">
+
+          <!-- Left info panel -->
+          <div
+            class="lg:col-span-2 p-10 lg:p-12 border-b lg:border-b-0 lg:border-r border-outline-variant/20 flex flex-col justify-between gap-8">
+            <div class="space-y-5">
+              <h2 class="font-headline-xl text-headline-xl text-on-surface leading-tight">Have something<br />to build?
+              </h2>
+              <p class="font-body-lg text-body-lg text-on-surface-variant leading-relaxed">
+                Tell us what's broken, or what doesn't exist yet. We'll tell you honestly whether it's a good fit — no
+                sales pitch.
+              </p>
+            </div>
+            <div class="space-y-4">
+              <div class="font-code-sm text-[10px] text-outline uppercase tracking-widest">What happens next</div>
+              <div class="space-y-3">
+                <div class="flex items-start gap-3">
+                  <span class="font-code-sm text-[11px] text-primary mt-0.5">01</span>
+                  <p class="font-body-md text-body-md text-on-surface-variant">We read your message and assess fit
+                    honestly.</p>
+                </div>
+                <div class="flex items-start gap-3">
+                  <span class="font-code-sm text-[11px] text-primary mt-0.5">02</span>
+                  <p class="font-body-md text-body-md text-on-surface-variant">If it's a match, we reply within 24–48
+                    hours.</p>
+                </div>
+                <div class="flex items-start gap-3">
+                  <span class="font-code-sm text-[11px] text-primary mt-0.5">03</span>
+                  <p class="font-body-md text-body-md text-on-surface-variant">We jump on a call to scope and plan
+                    together.</p>
+                </div>
+              </div>
+            </div>
+            <div class="font-code-sm text-[11px] text-outline">
+              Or reach us directly at<br />
+              <a href="mailto:hello@hmlabs.dev" class="text-primary hover:underline">hello@hmlabs.dev</a>
+            </div>
+          </div>
+
+          <!-- Right: form -->
+          <div class="lg:col-span-3 p-10 lg:p-12">
+            <div id="form-status" class="form-status mb-6" role="alert">
+              <span id="form-status-icon" class="material-symbols-outlined text-[18px]">check_circle</span>
+              <span id="form-status-msg"></span>
+            </div>
+
+            <div id="contact-form" class="space-y-5">
+              <!-- Name + Email -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div class="form-field">
+                  <label class="form-label" for="cf-name">Your name <span class="req">*</span></label>
+                  <input id="cf-name" class="form-input" type="text" placeholder="Hamza Mirza" autocomplete="name"
+                    maxlength="80" />
+                  <div class="form-err-msg" id="err-name">Please enter your name.</div>
+                </div>
+                <div class="form-field">
+                  <label class="form-label" for="cf-email">Email <span class="req">*</span></label>
+                  <input id="cf-email" class="form-input" type="email" placeholder="you@company.com"
+                    autocomplete="email" maxlength="120" />
+                  <div class="form-err-msg" id="err-email">Enter a valid email address.</div>
+                </div>
+              </div>
+
+              <!-- Company + Role -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div class="form-field">
+                  <label class="form-label" for="cf-company">Company / Organisation</label>
+                  <input id="cf-company" class="form-input" type="text" placeholder="Acme Corp (optional)"
+                    maxlength="80" />
+                </div>
+                <div class="form-field">
+                  <label class="form-label" for="cf-role">Your role</label>
+                  <select id="cf-role" class="form-select">
+                    <option value="">— Select role —</option>
+                    <option>Founder / CEO</option>
+                    <option>CTO / Tech Lead</option>
+                    <option>Product Manager</option>
+                    <option>Engineering Manager</option>
+                    <option>Developer</option>
+                    <option>Operations / Admin</option>
+                    <option>Researcher / Academic</option>
+                    <option>Other</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Service -->
+              <div class="form-field">
+                <label class="form-label" for="cf-service">What do you need? <span class="req">*</span></label>
+                <select id="cf-service" class="form-select">
+                  <option value="">— Choose a service —</option>
+                  <optgroup label="AI &amp; Agents">
+                    <option>AI / LLM Product Development</option>
+                    <option>Agentic RAG System</option>
+                    <option>Voice AI Agent</option>
+                    <option>AI Automation Pipeline</option>
+                  </optgroup>
+                  <optgroup label="Full-Stack &amp; SaaS">
+                    <option>Full-Stack Web Application</option>
+                    <option>SaaS Platform Build</option>
+                    <option>IoT / Hardware Integration</option>
+                    <option>API Design &amp; Backend</option>
+                  </optgroup>
+                  <optgroup label="Integrations &amp; ERP">
+                    <option>ERP Migration / Integration</option>
+                    <option>Inventory Sync &amp; Automation</option>
+                    <option>Data Pipeline Engineering</option>
+                  </optgroup>
+                  <optgroup label="Security">
+                    <option>Cybersecurity / EASM Tool</option>
+                    <option>Security Research &amp; Tooling</option>
+                  </optgroup>
+                  <optgroup label="Other">
+                    <option>Technical Consulting</option>
+                    <option>Something else</option>
+                  </optgroup>
+                </select>
+                <div class="form-err-msg" id="err-service">Please select a service.</div>
+              </div>
+
+              <!-- Budget + Timeline -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div class="form-field">
+                  <label class="form-label" for="cf-budget">Rough budget</label>
+                  <select id="cf-budget" class="form-select">
+                    <option value="">— Not sure yet —</option>
+                    <option>Under $5k</option>
+                    <option>$5k – $15k</option>
+                    <option>$15k – $40k</option>
+                    <option>$40k – $100k</option>
+                    <option>$100k+</option>
+                    <option>Prefer to discuss</option>
+                  </select>
+                </div>
+                <div class="form-field">
+                  <label class="form-label" for="cf-timeline">Ideal start</label>
+                  <select id="cf-timeline" class="form-select">
+                    <option value="">— Flexible —</option>
+                    <option>ASAP</option>
+                    <option>Within 2 weeks</option>
+                    <option>Next month</option>
+                    <option>In 1–3 months</option>
+                    <option>Planning stage</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Message -->
+              <div class="form-field">
+                <label class="form-label" for="cf-message">Tell us about the project <span class="req">*</span></label>
+                <textarea id="cf-message" class="form-textarea"
+                  placeholder="What are you building? What problem does it solve? Any tech preferences or constraints?"
+                  maxlength="1200"></textarea>
+                <div class="char-count" id="char-count">0 / 1200</div>
+                <div class="form-err-msg" id="err-message">Please describe your project (min 20 characters).</div>
+              </div>
+
+              <!-- Submit row -->
+              <div class="flex items-center justify-between pt-2 gap-4 flex-wrap">
+                <p class="font-code-sm text-[11px] text-outline">Fields marked <span class="text-primary">*</span> are
+                  required</p>
+                <button id="cf-submit" class="form-submit-btn">
+                  <span class="material-symbols-outlined text-[17px]" id="submit-icon">send</span>
+                  <span id="submit-label">Send message</span>
+                </button>
+              </div>
+            </div><!-- /contact-form -->
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="bg-surface-container-lowest border-t border-outline-variant/50">
+    <div
+      class="flex flex-col md:flex-row justify-between items-center py-6 px-margin-desktop w-full max-w-container-max mx-auto space-y-4 md:space-y-0">
+      <div class="flex items-center gap-4">
+        <span class="font-headline-md text-primary font-bold">HM Labs</span>
+        <span class="font-code-sm text-code-sm text-secondary">© 2026 HM Labs</span>
+      </div>
+      <div class="flex gap-6 font-code-sm text-code-sm text-on-tertiary-fixed-variant">
+        <span>Karachi, Pakistan</span>
+        <span>Remote-friendly</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('opacity-100', 'translate-y-0');
+          entry.target.classList.remove('opacity-0', 'translate-y-4');
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.glass-panel, .sphere-reveal').forEach(panel => {
+      panel.classList.add('transition-all', 'duration-700', 'opacity-0', 'translate-y-4');
+      observer.observe(panel);
+    });
+
+    // ===== Skills Universe (Three.js sphere) =====
+    (function () {
+      const skillsSection = document.getElementById('skills-universe');
+      const container = document.getElementById('skills-sphere');
+      if (!container || !skillsSection || !window.THREE) return;
+
+      let sphereInitialized = false;
+
+      function initSphere() {
+        if (sphereInitialized) return;
+        sphereInitialized = true;
+
+        const skills = [
+        { name: 'Python', color: '#3776AB', icon: 'python/python-original.svg' },
+        { name: 'FastAPI', color: '#009688', icon: 'fastapi/fastapi-original.svg' },
+        { name: 'Django', color: '#0C4B33', icon: 'django/django-plain.svg' },
+        { name: 'React', color: '#61DAFB', icon: 'react/react-original.svg' },
+        { name: 'TypeScript', color: '#3178C6', icon: 'typescript/typescript-original.svg' },
+        { name: 'JavaScript', color: '#F7DF1E', icon: 'javascript/javascript-original.svg' },
+        { name: 'PostgreSQL', color: '#4169E1', icon: 'postgresql/postgresql-original.svg' },
+        { name: 'MongoDB', color: '#47A248', icon: 'mongodb/mongodb-original.svg' },
+        { name: 'Docker', color: '#2496ED', icon: 'docker/docker-original.svg' },
+        { name: 'Redis', color: '#DC382D', icon: 'redis/redis-original.svg' },
+        { name: 'PyTorch', color: '#EE4C2C', icon: 'pytorch/pytorch-original.svg' },
+        { name: 'Git', color: '#F05032', icon: 'git/git-original.svg' },
+        { name: 'Node.js', color: '#5FA04E', icon: 'nodejs/nodejs-original.svg' },
+        { name: 'HTML5', color: '#E34F26', icon: 'html5/html5-original.svg' },
+        { name: 'CSS3', color: '#1572B6', icon: 'css3/css3-original.svg' },
+        { name: 'MySQL', color: '#4479A1', icon: 'mysql/mysql-original.svg' },
+        { name: 'AWS', color: '#FF9900', icon: 'amazonwebservices/amazonwebservices-plain-wordmark.svg' },
+        { name: 'GCP', color: '#4285F4', icon: 'googlecloud/googlecloud-original.svg' },
+        { name: 'Azure', color: '#0078D4', icon: 'azure/azure-original.svg' },
+        { name: 'Linux', color: '#FCC624', icon: 'linux/linux-original.svg' },
+        { name: 'Next.js', color: '#FFFFFF', icon: 'nextjs/nextjs-original.svg' },
+        { name: 'Stripe', color: '#635BFF', draw: 'stripe' },
+        { name: 'LangGraph', color: '#5EEAD4', draw: 'langgraph' },
+        { name: 'Apache Kafka', color: '#231F20', icon: 'apachekafka/apachekafka-original.svg' }
+      ];
+      const ICON_BASE = 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/';
+
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 1000);
+      camera.position.z = 17.5;
+
+      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      renderer.setSize(container.clientWidth, container.clientHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      container.appendChild(renderer.domElement);
+
+      const group = new THREE.Group();
+      scene.add(group);
+
+      // thin wireframe sphere so icons read as a connected structure, not floating balls
+      // depth-faded shader: edges further from camera (back of sphere) fade out
+      const wireGeo = new THREE.IcosahedronGeometry(6.6, 2);
+      const wireMat = new THREE.ShaderMaterial({
+        transparent: true,
+        depthWrite: false,
+        uniforms: { color: { value: new THREE.Color(0xd0bcff) } },
+        vertexShader: `
+                varying float vDepth;
+                void main() {
+                    vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+                    vDepth = -mvPosition.z;
+                    gl_Position = projectionMatrix * mvPosition;
+                }
+            `,
+        fragmentShader: `
+                uniform vec3 color;
+                varying float vDepth;
+                void main() {
+                    // near edges brighter, far edges fade toward near-zero
+                    float t = smoothstep(10.0, 20.0, vDepth);
+                    float opacity = mix(0.22, 0.03, t);
+                    gl_FragColor = vec4(color, opacity);
+                }
+            `,
+        wireframe: true
+      });
+      group.add(new THREE.Mesh(wireGeo, wireMat));
+
+      function drawCustomMark(ctx, type, color, cx, cy) {
+        ctx.save();
+        ctx.strokeStyle = color;
+        ctx.fillStyle = color;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+
+        if (type === 'stripe') {
+          // simplified stripe "S" wordmark glyph
+          ctx.font = 'bold 48px "Inter", "Helvetica Neue", Arial, sans-serif';
+          ctx.letterSpacing = '-1px'; // Recreates Stripe's tight letter spacing
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('stripe', cx, cy + 2);
+        } else if (type === 'langgraph') {
+          // simple node-graph glyph: three connected nodes
+          ctx.lineWidth = 3;
+          const pts = [
+            { x: cx, y: cy - 26 },
+            { x: cx - 26, y: cy + 18 },
+            { x: cx + 26, y: cy + 18 },
+          ];
+          ctx.beginPath();
+          ctx.moveTo(pts[0].x, pts[0].y); ctx.lineTo(pts[1].x, pts[1].y);
+          ctx.moveTo(pts[0].x, pts[0].y); ctx.lineTo(pts[2].x, pts[2].y);
+          ctx.moveTo(pts[1].x, pts[1].y); ctx.lineTo(pts[2].x, pts[2].y);
+          ctx.stroke();
+          pts.forEach(p => {
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, 7, 0, Math.PI * 2);
+            ctx.fill();
+          });
+        }
+        ctx.restore();
+      }
+
+      function makeSprite(skill) {
+        const size = 256;
+        const canvas = document.createElement('canvas');
+        canvas.width = size; canvas.height = size;
+        const ctx = canvas.getContext('2d');
+
+        function drawBase() {
+          ctx.clearRect(0, 0, size, size);
+          ctx.fillStyle = 'rgba(20,20,22,0.9)';
+          ctx.beginPath();
+          ctx.arc(size / 2, size / 2 - 20, 78, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = skill.color;
+          ctx.lineWidth = 4;
+          ctx.stroke();
+
+          ctx.fillStyle = '#e5e2e3';
+          ctx.font = '24px JetBrains Mono, monospace';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(skill.name, size / 2, size / 2 + 96);
+        }
+
+        drawBase();
+        const texture = new THREE.CanvasTexture(canvas);
+        texture.minFilter = THREE.LinearFilter;
+        const material = new THREE.SpriteMaterial({ map: texture, transparent: true });
+        const sprite = new THREE.Sprite(material);
+        sprite.scale.set(2.6, 2.6, 1);
+
+        if (skill.draw) {
+          drawBase();
+          drawCustomMark(ctx, skill.draw, skill.color, size / 2, size / 2 - 20);
+          texture.needsUpdate = true;
+        } else if (skill.icon) {
+          const img = new Image();
+          img.crossOrigin = 'anonymous';
+          img.onload = () => {
+            drawBase();
+            const iconSize = 88;
+            ctx.drawImage(img, size / 2 - iconSize / 2, size / 2 - 20 - iconSize / 2, iconSize, iconSize);
+            texture.needsUpdate = true;
+          };
+          img.src = ICON_BASE + skill.icon;
+        }
+
+        return sprite;
+      }
+
+      // Fibonacci sphere distribution for even spacing
+      const radius = 6.6;
+      const n = skills.length;
+      skills.forEach((skill, i) => {
+        const phi = Math.acos(1 - 2 * (i + 0.5) / n);
+        const theta = Math.PI * (1 + Math.sqrt(5)) * i;
+        const x = radius * Math.sin(phi) * Math.cos(theta);
+        const y = radius * Math.sin(phi) * Math.sin(theta);
+        const z = radius * Math.cos(phi);
+        const sprite = makeSprite(skill);
+        sprite.position.set(x, y, z);
+        group.add(sprite);
+      });
+
+      // drag to rotate, with momentum
+      let isDragging = false;
+      let prevX = 0, prevY = 0;
+      let velX = 0, velY = 0;
+      const idleSpinSpeed = 0.0018;
+      let idleTimeout = null;
+      let isIdle = true;
+
+      function pointerDown(x, y) {
+        isDragging = true; isIdle = false; prevX = x; prevY = y; velX = 0; velY = 0;
+        clearTimeout(idleTimeout);
+      }
+      function pointerMove(x, y) {
+        if (!isDragging) return;
+        const dx = x - prevX, dy = y - prevY;
+        group.rotation.y += dx * 0.005;
+        group.rotation.x += dy * 0.005;
+        velX = dx * 0.0003;
+        velY = dy * 0.0003;
+        prevX = x; prevY = y;
+      }
+      function pointerUp() {
+        isDragging = false;
+        clearTimeout(idleTimeout);
+        idleTimeout = setTimeout(() => { isIdle = true; }, 600);
+      }
+
+      renderer.domElement.addEventListener('mousedown', e => pointerDown(e.clientX, e.clientY));
+      window.addEventListener('mousemove', e => pointerMove(e.clientX, e.clientY));
+      window.addEventListener('mouseup', pointerUp);
+
+      renderer.domElement.addEventListener('touchstart', e => {
+        const t = e.touches[0]; pointerDown(t.clientX, t.clientY);
+      }, { passive: true });
+      renderer.domElement.addEventListener('touchmove', e => {
+        const t = e.touches[0]; pointerMove(t.clientX, t.clientY);
+      }, { passive: true });
+      renderer.domElement.addEventListener('touchend', pointerUp);
+
+      function animate() {
+        requestAnimationFrame(animate);
+        if (!isDragging) {
+          if (isIdle) {
+            // gently settle into a constant slow spin
+            velX += (idleSpinSpeed - velX) * 0.02;
+            velY += (0 - velY) * 0.05;
+          } else {
+            velX *= 0.97;
+            velY *= 0.97;
+          }
+          group.rotation.y += velX;
+          group.rotation.x += velY;
+        }
+        renderer.render(scene, camera);
+      }
+      animate();
+
+      window.addEventListener('resize', () => {
+        if (!container.clientWidth) return;
+        camera.aspect = container.clientWidth / container.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(container.clientWidth, container.clientHeight);
+      });
+      }
+
+      // Lazy load sphere when section comes into view
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            initSphere();
+            observer.unobserve(skillsSection);
+          }
+        });
+      }, { threshold: 0.1 });
+
+      observer.observe(skillsSection);
+    })();
+  </script>
+
+  <script>
+    /* ── HM Labs Contact Form ── */
+    (function () {
+      const API = 'http://localhost:8000/api/contact';
+      const SOURCE = 'index';
+
+      const f = {
+        name: document.getElementById('cf-name'),
+        email: document.getElementById('cf-email'),
+        company: document.getElementById('cf-company'),
+        role: document.getElementById('cf-role'),
+        service: document.getElementById('cf-service'),
+        budget: document.getElementById('cf-budget'),
+        timeline: document.getElementById('cf-timeline'),
+        message: document.getElementById('cf-message'),
+      };
+      const btn = document.getElementById('cf-submit');
+      const btnLabel = document.getElementById('submit-label');
+      const btnIcon = document.getElementById('submit-icon');
+      const statusBox = document.getElementById('form-status');
+      const statusMsg = document.getElementById('form-status-msg');
+      const statusIcon = document.getElementById('form-status-icon');
+      const charCount = document.getElementById('char-count');
+
+      if (!btn) return; // guard if section not found
+
+      f.message.addEventListener('input', () => {
+        const len = f.message.value.length;
+        charCount.textContent = len + ' / 1200';
+        charCount.classList.toggle('warn', len > 1100);
+      });
+
+      function showErr(id, msg) {
+        const el = document.getElementById('cf-' + id);
+        const er = document.getElementById('err-' + id);
+        if (el) el.classList.add('err');
+        if (er) { er.textContent = msg; er.classList.add('show'); }
+      }
+      function clearErrs() {
+        ['name', 'email', 'service', 'message'].forEach(id => {
+          const el = document.getElementById('cf-' + id);
+          const er = document.getElementById('err-' + id);
+          if (el) el.classList.remove('err');
+          if (er) er.classList.remove('show');
+        });
+      }
+      function validate() {
+        clearErrs();
+        let ok = true;
+        if (!f.name.value.trim()) { showErr('name', 'Please enter your name.'); ok = false; }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email.value.trim())) { showErr('email', 'Enter a valid email address.'); ok = false; }
+        if (!f.service.value) { showErr('service', 'Please select a service.'); ok = false; }
+        if (f.message.value.trim().length < 20) { showErr('message', 'Please describe your project (min 20 characters).'); ok = false; }
+        return ok;
+      }
+      function setStatus(type, msg) {
+        statusBox.className = 'form-status ' + type;
+        statusIcon.textContent = type === 'success' ? 'check_circle' : 'error';
+        statusMsg.textContent = msg;
+        statusBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+
+      btn.addEventListener('click', async () => {
+        if (!validate()) return;
+        btn.disabled = true;
+        btnLabel.textContent = 'Sending…';
+        btnIcon.textContent = 'hourglass_empty';
+
+        const payload = {
+          name: f.name.value.trim(),
+          email: f.email.value.trim(),
+          company: f.company.value.trim() || null,
+          role: f.role.value || null,
+          service: f.service.value,
+          budget: f.budget.value || null,
+          timeline: f.timeline.value || null,
+          message: f.message.value.trim(),
+          source_page: SOURCE,
+        };
+
+        try {
+          const res = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+          const data = await res.json();
+          if (res.ok) {
+            setStatus('success', data.message || "We\'ve received your message and will be in touch shortly.");
+            document.getElementById('contact-form').style.opacity = '0.4';
+            document.getElementById('contact-form').style.pointerEvents = 'none';
+            btnLabel.textContent = 'Sent';
+            btnIcon.textContent = 'check';
+          } else {
+            setStatus('err-state', data.detail || 'Something went wrong. Please try again.');
+            btn.disabled = false; btnLabel.textContent = 'Send message'; btnIcon.textContent = 'send';
+          }
+        } catch (e) {
+          setStatus('err-state', 'Could not reach the server. Please email us at hello@hmlabs.dev');
+          btn.disabled = false; btnLabel.textContent = 'Send message'; btnIcon.textContent = 'send';
+        }
+      });
+    })();
+  </script>
+</body>
+
+</html>

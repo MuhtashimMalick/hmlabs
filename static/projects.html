@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>HM Labs | Projects & Case Studies</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Geist:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "primary-fixed-dim": "#d0bcff", "on-primary": "#3c0091", "on-tertiary-fixed-variant": "#444749",
+          "on-tertiary": "#2d3133", "inverse-primary": "#6d3bd7", "tertiary-fixed-dim": "#c4c7c9",
+          "on-secondary": "#003640", "on-error-container": "#ffdad6", "on-secondary-fixed": "#001f26",
+          "tertiary": "#c4c7c9", "on-primary-container": "#340080", "on-secondary-fixed-variant": "#004e5c",
+          "on-surface-variant": "#cbc3d7", "error-container": "#93000a", "primary": "#d0bcff",
+          "surface-container-highest": "#353436", "primary-fixed": "#e9ddff", "surface": "#131314",
+          "on-primary-fixed": "#23005c", "surface-container-low": "#1c1b1c", "on-tertiary-fixed": "#191c1e",
+          "tertiary-fixed": "#e0e3e5", "tertiary-container": "#8e9193", "surface-container-high": "#2a2a2b",
+          "surface-variant": "#353436", "inverse-surface": "#e5e2e3", "on-tertiary-container": "#272a2c",
+          "surface-tint": "#d0bcff", "on-surface": "#e5e2e3", "on-background": "#e5e2e3",
+          "primary-container": "#a078ff", "secondary": "#4cd7f6", "surface-container": "#201f20",
+          "error": "#ffb4ab", "on-secondary-container": "#00424e", "secondary-container": "#03b5d3",
+          "background": "#131314", "surface-container-lowest": "#0e0e0f", "outline-variant": "#494454",
+          "on-primary-fixed-variant": "#5516be", "surface-dim": "#131314", "inverse-on-surface": "#313031",
+          "on-error": "#690005", "secondary-fixed-dim": "#4cd7f6", "outline": "#958ea0",
+          "surface-bright": "#3a393a", "secondary-fixed": "#acedff"
+        },
+        borderRadius: { DEFAULT: "0.125rem", lg: "0.25rem", xl: "0.5rem", full: "0.75rem" },
+        spacing: { "margin-desktop": "40px", gutter: "24px", "margin-mobile": "16px", unit: "4px", "container-max": "1280px" },
+        fontFamily: {
+          "headline-lg-mobile": ["JetBrains Mono"], "body-md": ["Geist"], "code-sm": ["JetBrains Mono"],
+          "body-lg": ["Geist"], "headline-md": ["JetBrains Mono"], "headline-lg": ["JetBrains Mono"],
+          "label-md": ["JetBrains Mono"], "headline-xl": ["JetBrains Mono"]
+        },
+        fontSize: {
+          "headline-lg-mobile": ["24px", {lineHeight:"1.2", fontWeight:"600"}],
+          "body-md": ["16px", {lineHeight:"1.6", fontWeight:"400"}],
+          "code-sm": ["13px", {lineHeight:"1.5", fontWeight:"400"}],
+          "body-lg": ["18px", {lineHeight:"1.6", fontWeight:"400"}],
+          "headline-md": ["20px", {lineHeight:"1.4", fontWeight:"600"}],
+          "headline-lg": ["32px", {lineHeight:"1.2", letterSpacing:"-0.02em", fontWeight:"600"}],
+          "label-md": ["14px", {lineHeight:"1.4", letterSpacing:"0.02em", fontWeight:"500"}],
+          "headline-xl": ["48px", {lineHeight:"1.1", letterSpacing:"-0.04em", fontWeight:"700"}]
+        }
+      }
+    }
+  }
+</script>
+<style>
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-thumb { background: #404040; border-radius: 2px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+
+  .glass-panel {
+    background: rgba(18, 18, 20, 0.8);
+    backdrop-filter: blur(12px);
+    border: 1px solid #262626;
+  }
+
+  /* ── Timeline sidebar ── */
+  .timeline-line {
+    position: absolute;
+    left: 50%;
+    top: 0; bottom: 0;
+    width: 1px;
+    transform: translateX(-50%);
+    background: linear-gradient(to bottom, transparent 0%, #494454 8%, #494454 92%, transparent 100%);
+  }
+
+  .timeline-progress {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    width: 2px;
+    transform: translateX(-50%);
+    background: linear-gradient(to bottom, #d0bcff, #4cd7f6);
+    transition: height 0.5s cubic-bezier(0.4,0,0.2,1);
+    border-radius: 1px;
+  }
+
+  .timeline-node {
+    position: relative;
+    z-index: 10;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .node-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid #494454;
+    background: #131314;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  .node-dot::after {
+    content: '';
+    position: absolute;
+    inset: -5px;
+    border-radius: 50%;
+    border: 1px solid transparent;
+    transition: border-color 0.3s ease;
+  }
+
+  .timeline-node.active .node-dot {
+    width: 18px;
+    height: 18px;
+    border-color: #d0bcff;
+    background: #d0bcff;
+    box-shadow: 0 0 16px rgba(208,188,255,0.5);
+  }
+
+  .timeline-node.active .node-dot::after {
+    border-color: rgba(208,188,255,0.25);
+  }
+
+  .timeline-node.visited .node-dot {
+    border-color: #d0bcff;
+    background: rgba(208,188,255,0.15);
+  }
+
+  .node-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: #958ea0;
+    text-align: center;
+    line-height: 1.3;
+    letter-spacing: 0.04em;
+    transition: color 0.3s;
+    writing-mode: horizontal-tb;
+    max-width: 70px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .timeline-node.active .node-label { color: #d0bcff; }
+  .timeline-node.visited .node-label { color: #cbc3d7; }
+
+  /* top icon */
+  .timeline-top-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 2px dashed #d0bcff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(208,188,255,0.08);
+    animation: spin-slow 12s linear infinite;
+  }
+  @keyframes spin-slow {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+  .timeline-top-icon span {
+    animation: spin-slow 12s linear infinite reverse;
+    color: #d0bcff;
+    font-size: 20px;
+  }
+
+  /* ── Project panel ── */
+  .projects-viewport {
+    overflow: hidden;
+    position: relative;
+  }
+
+  .projects-track {
+    display: flex;
+    transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
+  }
+
+  .project-panel {
+    flex-shrink: 0;
+    width: 100%;
+  }
+
+  /* deliverable arrows */
+  .deliverable-item {
+    position: relative;
+    padding-left: 1.5rem;
+  }
+  .deliverable-item::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: #d0bcff;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+  }
+
+  .outcome-block {
+    border-left: 3px solid #4cd7f6;
+    background: rgba(76,215,246,0.04);
+  }
+
+  .stat-block { border-left: 2px solid #d0bcff; }
+
+  @keyframes pulse-dot {
+    0%,100% { opacity:1; } 50% { opacity:0.3; }
+  }
+  .pulse-dot { animation: pulse-dot 2s infinite; }
+
+  /* ── Contact Form ── */
+  .form-field { display: flex; flex-direction: column; gap: 6px; }
+  .form-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #958ea0; }
+  .form-label .req { color: #d0bcff; }
+  .form-input, .form-select, .form-textarea {
+    background: rgba(30,29,31,0.8); border: 1px solid #353436; border-radius: 6px;
+    color: #e5e2e3; font-family: 'Geist', sans-serif; font-size: 15px; padding: 10px 14px;
+    outline: none; transition: border-color 0.2s, box-shadow 0.2s; width: 100%;
+    appearance: none; -webkit-appearance: none;
+  }
+  .form-select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23958ea0' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; cursor: pointer;
+  }
+  .form-select option { background: #1c1b1c; color: #e5e2e3; }
+  .form-textarea { resize: vertical; min-height: 110px; line-height: 1.6; }
+  .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: #d0bcff; box-shadow: 0 0 0 3px rgba(208,188,255,0.12); }
+  .form-input::placeholder, .form-textarea::placeholder { color: #494454; }
+  .form-input.err, .form-select.err, .form-textarea.err { border-color: #ffb4ab; box-shadow: 0 0 0 3px rgba(255,180,171,0.1); }
+  .form-error-msg { font-size: 12px; color: #ffb4ab; font-family: 'JetBrains Mono', monospace; margin-top: 2px; display: none; }
+  .form-error-msg.show { display: block; }
+  .form-submit-btn {
+    background: #d0bcff; color: #3c0091; border: none; border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 600;
+    letter-spacing: 0.04em; padding: 13px 28px; cursor: pointer;
+    transition: transform 0.15s, opacity 0.15s, box-shadow 0.2s;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .form-submit-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(208,188,255,0.3); }
+  .form-submit-btn:active { transform: translateY(0); }
+  .form-submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+  .form-status { border-radius: 6px; padding: 12px 16px; font-family: 'JetBrains Mono', monospace; font-size: 13px; display: none; align-items: center; gap: 10px; }
+  .form-status.success { display: flex; background: rgba(76,215,246,0.08); border: 1px solid rgba(76,215,246,0.3); color: #4cd7f6; }
+  .form-status.err-state { display: flex; background: rgba(255,180,171,0.08); border: 1px solid rgba(255,180,171,0.3); color: #ffb4ab; }
+  .char-count { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #494454; text-align: right; margin-top: 3px; transition: color 0.2s; }
+  .char-count.warn { color: #ffb4ab; }
+
+
+  /* slide-in animation for panel content */
+  .panel-content {
+    opacity: 0;
+    transform: translateX(24px);
+    transition: opacity 0.4s ease 0.15s, transform 0.4s ease 0.15s;
+  }
+  .panel-content.in { opacity: 1; transform: translateX(0); }
+</style>
+</head>
+<body class="bg-background text-on-background font-body-md selection:bg-primary-container selection:text-on-primary-container overflow-x-hidden">
+
+<!-- ═══ NAVBAR (same as index) ═══ -->
+<header class="bg-surface/80 dark:bg-surface/80 backdrop-blur-md top-0 z-50 sticky border-b border-outline-variant/30 h-16">
+<nav class="flex justify-between items-center w-full px-margin-desktop max-w-container-max mx-auto h-full">
+  <div class="flex items-center gap-2">
+    <a href="index.html" class="font-headline-md text-headline-md font-bold tracking-tighter text-on-surface hover:text-primary transition-colors">HM Labs</a>
+  </div>
+  <div class="hidden md:flex items-center gap-8">
+    <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="index.html#services">Services</a>
+    <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="index.html#about">About</a>
+    <a class="font-label-md text-label-md text-primary transition-colors" href="projects.html">Projects</a>
+    <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="index.html#contact">Contact</a>
+  </div>
+  <div class="flex items-center gap-4">
+    <a href="mailto:hello@hmlabs.dev" class="bg-primary-container text-on-primary-container px-4 py-1.5 rounded-lg font-label-md text-label-md font-bold hover:bg-primary-container/80 transition-all duration-300">Connect</a>
+  </div>
+</nav>
+</header>
+
+<!-- ═══ PAGE HEADER ═══ -->
+<div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop pt-12 pb-8">
+  <div class="inline-flex items-center gap-2 px-3 py-1 rounded bg-surface-container-highest border border-outline-variant/30 font-code-sm text-code-sm text-primary mb-4">
+    <span class="w-2 h-2 rounded-full bg-primary pulse-dot"></span>
+    6 shipped systems
+  </div>
+  <h1 class="font-headline-xl text-headline-xl text-on-surface mb-3">Case Studies</h1>
+  <p class="font-body-lg text-body-lg text-on-surface-variant max-w-xl">
+    Every project we've shipped — what the problem was, how we solved it, and what we used to build it.
+  </p>
+</div>
+
+<!-- ═══ MAIN LAYOUT: panels + sidebar ═══ -->
+<div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop pb-24 flex gap-0 md:gap-10 items-start">
+
+  <!-- ── Left: project panels viewport ── -->
+  <div class="flex-1 min-w-0">
+
+    <!-- Mobile project switcher pills -->
+    <div class="flex gap-2 flex-wrap mb-6 md:hidden">
+      <button class="mob-pill px-3 py-1 glass-panel rounded font-code-sm text-[11px] text-primary border-primary" data-idx="0">AttackEye</button>
+      <button class="mob-pill px-3 py-1 glass-panel rounded font-code-sm text-[11px] text-on-surface-variant" data-idx="1">EzeHome</button>
+      <button class="mob-pill px-3 py-1 glass-panel rounded font-code-sm text-[11px] text-on-surface-variant" data-idx="2">MorfBot</button>
+      <button class="mob-pill px-3 py-1 glass-panel rounded font-code-sm text-[11px] text-on-surface-variant" data-idx="3">SOS Sync</button>
+      <button class="mob-pill px-3 py-1 glass-panel rounded font-code-sm text-[11px] text-on-surface-variant" data-idx="4">ERP</button>
+      <button class="mob-pill px-3 py-1 glass-panel rounded font-code-sm text-[11px] text-on-surface-variant" data-idx="5">RAG Agent</button>
+    </div>
+
+    <div class="projects-viewport">
+      <div class="projects-track" id="projects-track">
+
+        <!-- ══ PANEL 1: AttackEye ══ -->
+        <div class="project-panel">
+          <div class="panel-content in" data-panel="0">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+              <!-- meta -->
+              <div class="lg:col-span-4">
+                <div class="glass-panel rounded-xl p-6 space-y-5">
+                  <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary" style="font-size:40px">shield</span>
+                    <div>
+                      <div class="font-code-sm text-[10px] text-outline uppercase tracking-widest mb-1">Project 01</div>
+                      <h2 class="font-headline-md text-headline-md text-on-surface leading-tight">AttackEye<br/>EASM Platform</h2>
+                    </div>
+                  </div>
+                  <div class="h-px bg-outline-variant/30"></div>
+                  <div class="space-y-3">
+                    <div class="stat-block pl-3">
+                      <div class="font-code-sm text-[10px] text-outline uppercase tracking-widest">Type</div>
+                      <div class="font-body-md text-body-md text-on-surface">Cybersecurity / SaaS</div>
+                    </div>
+                    <div class="stat-block pl-3">
+                      <div class="font-code-sm text-[10px] text-outline uppercase tracking-widest">Origin</div>
+                      <div class="font-body-md text-body-md text-on-surface">NED University — NCCS</div>
+                    </div>
+                    <div class="stat-block pl-3">
+                      <div class="font-code-sm text-[10px] text-outline uppercase tracking-widest">Status</div>
+                      <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-secondary pulse-dot"></span>
+                        <span class="font-body-md text-body-md text-secondary">Live Product</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="h-px bg-outline-variant/30"></div>
+                  <div>
+                    <div class="font-code-sm text-[10px] text-outline uppercase tracking-widest mb-3">Tech Stack</div>
+                    <div class="flex flex-wrap gap-2">
+                      <span class="font-code-sm text-[11px] bg-surface-container-highest px-2 py-1 rounded text-primary">Amass</span>
+                      <span class="font-code-sm text-[11px] bg-surface-container-highest px-2 py-1 rounded text-primary">Nmap</span>
+                      <span class="font-code-sm text-[11px] bg-surface-container-highest px-2 py-1 rounded text-primary">Sigma.js</span>
+                      <span class="font-code-sm text-[11px] bg-surface-container-highest px-2 py-1 rounded text-primary">Python</span>
+                      <span class="font-code-sm text-[11px] bg-surface-container-highest px-2 py-1 rounded text-primary">FastAPI</span>
+                    </div>
+                  </div>
+                  <a href="https://attackeye.ai" target="_blank" class="block text-center bg-surface-container-high border border-outline-variant/40 rounded-lg py-2 font-code-sm text-code-sm text-secondary hover:border-secondary transition-colors">attackeye.ai →</a>
+                </div>
+              </div>
+              <!-- content -->
+              <div class="lg:col-span-8 space-y-8">
+                <div class="space-y-3">
+                  <h3 class="font-headline-lg text-headline-lg text-on-surface">The Problem</h3>
+                  <p class="font-body-lg text-body-lg text-on-surface-variant leading-relaxed">Organizations struggle to maintain visibility over their own external attack surface. Subdomains, exposed ports, third-party assets, and dark-web mentions accumulate faster than security teams can track them manually. AttackEye was built to make external attack surface management continuous and automated.</p>
+                </div>
+                <div class="space-y-4">
+                  <h3 class="font-headline-lg text-headline-lg text-on-surface">What We Built</h3>
+                  <div class="space-y-4 font-body-lg text-body-lg text-on-surface-variant">
+                    <div class="deliverable-item">Built an <span class="text-on-surface">external attack surface management (EASM) platform</span> that continuously maps and monitors an organization's internet-facing footprint.</div>
+                    <div class="deliverable-item">Integrated <span class="text-on-surface">automated domain enumeration</span> using Amass to discover subdomains, related assets, and shadow IT the organization may not be tracking.</div>
+                    <div class="deliverable-item">Wired in <span class="text-on-surface">port and vulnerability scanning</span> via Nmap to surface exposed services and misconfigurations across discovered assets.</div>
+                    <div class="deliverable-item">Added <span class="text-on-surface">dark-web monitoring and brand protection</span> capabilities to detect credential leaks, brand impersonation, and threat actor mentions.</div>
+                    <div class="deliverable-item">Visualized the entire attack graph using <span class="text-on-surface">Sigma.js network graphs</span>, giving security teams an interactive, explorable view of their exposure.</div>
+                  </div>
+                </div>
+                <div class="outcome-block rounded-xl p-6">
+                  <div class="font-code-sm text-[10px] text-secondary uppercase tracking-widest mb-3">Outcome</div>
+                  <p class="font-body-lg text-body-lg text-on-surface leading-relaxed">AttackEye is a live product born from research at NED University's National Centre for Cyber Security. It gives security teams continuous, automated visibility over their external exposure.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ PANEL 2: EzeHome ══ -->
+        <div class="project-panel">
+          <div class="panel-content" data-panel="1">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+              <div class="lg:col-span-4">
+                <div class="glass-panel rounded-xl p-6 space-y-5">
+                  <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-secondary" style="font-size:40px">villa</span>
+                    <div>
+                      <div class="font-code-sm text-[10px] text-outline uppercase tracking-widest mb-1">Project 02</div>
+                      <h2 class="font-headline-md text-headline-md text-on-surface leading-tight">EzeHome<br/>IoT Platform</h2>
+                    </div>
+                  </div>
+                  <div class="h-px bg-outline-variant/30"></div>
+                  <div class="space-y-3">
+                    <div class="stat-block pl-3">
+                      <div class="font-code-sm text-[10px] text-outline uppercase tracking-widest">Type</div>
+                      <div class="font-body-md text-body-md text-on-surface">IoT / Full-Stack Product</div>
+                    </div>
+                    <div class="stat-block pl-3">
+                      <div class="font-code-sm text-[10px] text-outline uppercase tracking-widest">Status</div>
+                      <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-primary pulse-dot"></span>
+                        <span class="font-body-md text-body-md text-primary">Live Product</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="h-px bg-outline-variant/30"></div>
+                  <div>
+                    <div class="font-code-sm text-[10px] text-outline uppercase tracking-widest mb-3">Tech Stack</div>
+                    <div class="flex flex-wrap gap-2">
+                      <span class="font-code-sm text-[11px] bg-surface-container-highest px-2 py-1 rounded text-primary">IoT</span>
+                      <span class="font-code-sm text-[11px] bg-surface-container-highest px-2 py-1 rounded text-primary">FastAPI</span>
+                      <span class="font-code-sm text-[11px] bg-surface-container-highest px-2 py-1 rounded text-primary">React</span>
+                      <span class="font-code-sm text-[11px] bg-surface-container-highest px-2 py-1 rounded text-primary">PostgreSQL</span>
+                      <span class="font-code-sm text-[11px] bg-surface-container-highest px-2 py-1 rounded text-primary">MQTT</span>
+                    </div>
+                  </div>
+                  <a href="https://ezehome.net" target="_blank" class="block text-center bg-surface-container-high border border-outline-variant/40 rounded-lg py-2 font-code-sm text-code-sm text-secondary hover:border-secondary transition-colors">ezehome.net →</a>
+                </div>
+              </div>
+              <div class="lg:col-span-8 space-y-8">
+                <div class="space-y-3">
+                  <h3 class="font-headline-lg text-headline-lg text-on-surface">The Problem</h3>
+                  <p class="font-body-lg text-body-lg text-on-surface-variant leading-relaxed">Property managers handling rental and sale listings across multiple properties had no unified system for reservations, smart device control, and tenant management. Existing tools handled one piece of the puzzle but nothing connected the physical layer (IoT devices) with the business layer (bookings, listings, operations).</p>
+                </div>
+                <div class="space-y-4">
+                  <h3 class="font-headline-lg text-headline-lg text-on-surface">What We Built</h3>
+                  <div class="space-y-4 font-body-lg text-body-lg text-on-surface-variant">
+                    <div class="deliverable-item">Built a <span class="text-on-surface">full-stack IoT property management platform</span> that unifies listings, reservations, and connected-device control in a single system.</div>
+                    <div class="deliverable-item">Engineered <span class="text-on-surface">real-time device management</span> — property managers can monitor and control smart devices across properties from a central dashboard.</div>
+                    <div class="deliverable-item">Built a <span class="text-on-surface">reservation and listing engine</span> that handles availability, booking flows, and property state transitions end-to-end.</div>
+                    <div class="deliverable-item">Designed the backend in <span class="text-on-surface">FastAPI with a React frontend</span>, optimized for low-latency device command delivery and real-time status updates.</div>
+                    <div class="deliverable-item">Architected the system to support <span class="text-on-surface">both rental and sale property workflows</span> with configurable listing types and device profiles per property.</div>
+                  </div>
+                </div>
+                <div class="outcome-block rounded-xl p-6">
+                  <div class="font-code-sm text-[10px] text-secondary uppercase tracking-widest mb-3">Outcome</div>
+                  <p class="font-body-lg text-body-lg text-on-surface leading-relaxed">EzeHome is a live product connecting property operations and smart devices in one platform, available at ezehome.net.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ PANEL 3: MorfBot ══ -->
+        <div class="project-panel">
+          <div class="panel-content" data-panel="2">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+              <div class="lg:col-span-4">
+                <div class="glass-panel rounded-xl p-6 space-y-5">
+                  <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary-container" style="font-size:40px">graphic_eq</span>
+                    <div>
+                      <div class="font-code-sm text-[10px] text-outline uppercase tracking-widest mb-1">Project 03</div>
+                      <h2 class="font-headline-md text-headline-md text-on-surface leading-tight">MorfBot<br/>Voice AI Agent</h2>
+                    </div>
+                  </div>
+                  <div class="h-px bg-outline-variant/30"></div>
+                  <div class="space-y-3">
+                    <div class="stat-block pl-3">
+                      <div class="font-code-sm text-[10px] text-outline uppercase tracking-widest">Type</div>
+                      <div class="font-body-md text-body-md text-on-surface">Voice AI / Agentic System</div>
+                    </div>
+                    <div class="stat-block pl-3">
+                      <div class="font-code-sm text-[10px] text-outline uppercase tracking-widest">Status</div>
+                      <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-secondary pulse-dot"></span>
+                        <span class="font-body-md text-body-md text-secondary">In Production</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="h-px bg-outline-variant/30"></div>
+                  <div>
+                    <div class="font-code-sm text-[10px] text-outline uppercase tracking-widest mb-3">Tech Stack</div>
+                    <div class="flex flex-wrap gap-2">
+                      <span class="font-code-sm text-[11px] bg-surface-container-highest px-2 py-1 rounded text-primary">Twilio</span>
+                      <span class="font-code-sm text-[11px] bg-surface-container-highest px-2 py-1 rounded text-primary">Deepgram STT</span>
+                      <span class="font-code-sm text-[11px] bg-surface-container-highest px-2 py-1 rounded text-primary">ElevenLabs TTS</span>
+                      <span class="font-code-sm text-[11px] bg-surface-container-highest px-2 py-1 rounded text-primary">LLM Reasoning</span>
+                      <span class="font-code-sm text-[11px] bg-surface-container-highest px-2 py-1 rounded text-primary">FastAPI</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="lg:col-span-8 space-y-8">
+                <div class="space-y-3">
+                  <h3 class="font-headline-lg text-headline-lg text-on-surface">The Problem</h3>
+                  <p class="font-body-lg text-body-lg text-on-surface-variant leading-relaxed">Sales teams spend a disproportionate amount of time on outbound calls — qualifying leads, handling objections, and booking follow-ups — work that doesn't require a human but historically had no good automated alternative. Existing voice bots were stiff, slow to respond, and broke down the moment a conversation deviated from a script.</p>
+                </div>
+                <div class="space-y-4">
+                  <h3 class="font-headline-lg text-headline-lg text-on-surface">What We Built</h3>
+                  <div class="space-y-4 font-body-lg text-body-lg text-on-surface-variant">
+                    <div class="deliverable-item">Built a <span class="text-on-surface">real-time voice AI sales agent</span> using Twilio Conversation Relay as the telephony layer — handles inbound and outbound calls end-to-end.</div>
+                    <div class="deliverable-item">Integrated <span class="text-on-surface">Deepgram for low-latency speech-to-text</span> transcription, tuned for natural conversational cadence and interruption handling.</div>
+                    <div class="deliverable-item">Wired in <span class="text-on-surface">ElevenLabs for natural-sounding voice synthesis</span>, giving the agent a consistent, human-like persona across all calls.</div>
+                    <div class="deliverable-item">Built an <span class="text-on-surface">LLM reasoning loop</span> that drives context-aware responses, handles objections, and steers conversations toward qualification or booking goals.</div>
+                    <div class="deliverable-item">Designed the entire pipeline for <span class="text-on-surface">sub-second end-to-end latency</span> — the gap between a caller finishing a sentence and MorfBot responding is imperceptible.</div>
+                  </div>
+                </div>
+                <div class="outcome-block rounded-xl p-6">
+                  <div class="font-code-sm text-[10px] text-secondary uppercase tracking-widest mb-3">Outcome</div>
+                  <p class="font-body-lg text-body-lg text-on-surface leading-relaxed">MorfBot is live in production, autonomously handling sales calls with natural conversation flow — demonstrating that voice AI can move beyond scripted bots into genuine agentic reasoning.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ PANEL 4: SOS Sync ══ -->
+        <div class="project-panel">
+          <div class="panel-content" data-panel="3">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+              <div class="lg:col-span-4">
+                <div class="glass-panel rounded-xl p-6 space-y-5">
+                  <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-tertiary" style="font-size:40px">sync_alt</span>
+                    <div>
+                      <div class="font-code-sm text-[10px] text-outline uppercase tracking-widest mb-1">Project 04</div>
+                      <h2 class="font-headline-md text-headline-md text-on-surface leading-tight">SOS ↔ StockTrim<br/>Sync Engine</h2>
+                    </div>
+                  </div>
+                  <div class="h-px bg-outline-variant/30"></div>
+                  <div class="space-y-3">
+                    <div class="stat-block pl-3">
+                      <div class="font-code-sm text-[10px] text-outline uppercase tracking-widest">Client</div>
+                      <div class="font-body-md text-body-md text-on-surface">US-Based Supply Chain Co.</div>
+                    </div>
+                    <div class="stat-block pl-3">
+                      <div class="font-code-sm text-[10px] text-outline uppercase tracking-widest">Type</div>
+                      <div class="font-body-md text-body-md text-on-surface">Integration Engineering</div>
+                    </div>
+                    <div class="stat-block pl-3">
+                      <div class="font-code-sm text-[10px] text-outline uppercase tracking-widest">Status</div>
+                      <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-secondary pulse-dot"></span>
+                        <span class="font-body-md text-body-md text-secondary">Live in Production</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="h-px bg-outline-variant/30"></div>
+                  <div>
+                    <div class="font-code-sm text-[10px] text-outline uppercase tracking-widest mb-3">Tech Stack</div>
+                    <div class="flex flex-wrap gap-2">
+                      <span class="font-code-sm text-[11px] bg-surface-container-highest px-2 py-1 rounded text-primary">FastAPI</span>
+                      <span class="font-code-sm text-[11px] bg-surface-container-highest px-2 py-1 rounded text-primary">REST APIs</span>
+                      <span class="font-code-sm text-[11px] bg-surface-container-highest px-2 py-1 rounded text-primary">PostgreSQL</span>
+                      <span class="font-code-sm text-[11px] bg-surface-container-highest px-2 py-1 rounded text-primary">Background Workers</span>
+                      <span class="font-code-sm text-[11px] bg-surface-container-highest px-2 py-1 rounded text-primary">Docker</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="lg:col-span-8 space-y-8">
+                <div class="space-y-3">
+                  <h3 class="font-headline-lg text-headline-lg text-on-surface">The Problem</h3>
+                  <p class="font-body-lg text-body-lg text-on-surface-variant leading-relaxed">A US-based supply chain company was running two independent enterprise platforms — SOS Inventory and StockTrim — with no automated way to keep them in sync. Inventory data had to be reconciled manually, introducing lag, errors, and operational overhead that scaled badly with their catalog size.</p>
+                </div>
+                <div class="space-y-4">
+                  <h3 class="font-headline-lg text-headline-lg text-on-surface">What We Built</h3>
+                  <div class="space-y-4 font-body-lg text-body-lg text-on-surface-variant">
+                    <div class="deliverable-item">Designed and built a <span class="text-on-surface">secure two-way data synchronization engine</span> between SOS Inventory and StockTrim, handling full bidirectional state propagation.</div>
+                    <div class="deliverable-item">Built a <span class="text-on-surface">scheduled automation layer</span> with configurable sync intervals — zero manual intervention required after deployment.</div>
+                    <div class="deliverable-item">Implemented <span class="text-on-surface">intelligent schema mapping and transformation logic</span> to bridge mismatched data models across both platforms without data loss.</div>
+                    <div class="deliverable-item">Engineered robust handling for <span class="text-on-surface">API rate limits, partial failures, and retry recovery</span> — the system degrades gracefully and self-heals.</div>
+                    <div class="deliverable-item">Applied <span class="text-on-surface">idempotent processing and conflict resolution</span> strategies to prevent duplicate or inconsistent records across sync cycles.</div>
+                    <div class="deliverable-item">Added <span class="text-on-surface">structured end-to-end logging</span> for full traceability of every sync operation, surfaced through a frontend log viewer.</div>
+                  </div>
+                </div>
+                <div class="outcome-block rounded-xl p-6">
+                  <div class="font-code-sm text-[10px] text-secondary uppercase tracking-widest mb-3">Outcome</div>
+                  <p class="font-body-lg text-body-lg text-on-surface leading-relaxed">The system eliminated manual inventory reconciliation entirely. The client now has real-time, consistent inventory visibility across both platforms with no operational overhead.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ PANEL 5: Unleashed ERP ══ -->
+        <div class="project-panel">
+          <div class="panel-content" data-panel="4">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+              <div class="lg:col-span-4">
+                <div class="glass-panel rounded-xl p-6 space-y-5">
+                  <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-secondary" style="font-size:40px">hub</span>
+                    <div>
+                      <div class="font-code-sm text-[10px] text-outline uppercase tracking-widest mb-1">Project 05</div>
+                      <h2 class="font-headline-md text-headline-md text-on-surface leading-tight">Unleashed ERP<br/>Migration</h2>
+                    </div>
+                  </div>
+                  <div class="h-px bg-outline-variant/30"></div>
+                  <div class="space-y-3">
+                    <div class="stat-block pl-3">
+                      <div class="font-code-sm text-[10px] text-outline uppercase tracking-widest">Client</div>
+                      <div class="font-body-md text-body-md text-on-surface">Australian E-Commerce & Distribution Co.</div>
+                    </div>
+                    <div class="stat-block pl-3">
+                      <div class="font-code-sm text-[10px] text-outline uppercase tracking-widest">Type</div>
+                      <div class="font-body-md text-body-md text-on-surface">ERP Migration & Backend Engineering</div>
+                    </div>
+                    <div class="stat-block pl-3">
+                      <div class="font-code-sm text-[10px] text-outline uppercase tracking-widest">Status</div>
+                      <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-secondary pulse-dot"></span>
+                        <span class="font-body-md text-body-md text-secondary">Delivered</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="h-px bg-outline-variant/30"></div>
+                  <div>
+                    <div class="font-code-sm text-[10px] text-outline uppercase tracking-widest mb-3">Tech Stack</div>
+                    <div class="flex flex-wrap gap-2">
+                      <span class="font-code-sm text-[11px] bg-surface-container-highest px-2 py-1 rounded text-primary">Python</span>
+                      <span class="font-code-sm text-[11px] bg-surface-container-highest px-2 py-1 rounded text-primary">Unleashed API</span>
+                      <span class="font-code-sm text-[11px] bg-surface-container-highest px-2 py-1 rounded text-primary">MYOB</span>
+                      <span class="font-code-sm text-[11px] bg-surface-container-highest px-2 py-1 rounded text-primary">Data Pipelines</span>
+                      <span class="font-code-sm text-[11px] bg-surface-container-highest px-2 py-1 rounded text-primary">Backend Automation</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="lg:col-span-8 space-y-8">
+                <div class="space-y-3">
+                  <h3 class="font-headline-lg text-headline-lg text-on-surface">The Problem</h3>
+                  <p class="font-body-lg text-body-lg text-on-surface-variant leading-relaxed">An Australian e-commerce and distribution company needed to migrate away from MYOB — a legacy accounting and inventory system — to Unleashed ERP. The challenge wasn't just migrating data; it was rebuilding their entire operational workflow around a fundamentally different system architecture, without disrupting live business operations.</p>
+                </div>
+                <div class="space-y-4">
+                  <h3 class="font-headline-lg text-headline-lg text-on-surface">What We Built</h3>
+                  <div class="space-y-4 font-body-lg text-body-lg text-on-surface-variant">
+                    <div class="deliverable-item">Led a <span class="text-on-surface">complete data and workflow migration</span> from MYOB to Unleashed ERP, reverse-engineering a 150-table legacy schema including XML data from handheld PDA hardware.</div>
+                    <div class="deliverable-item"><span class="text-on-surface">Rebuilt core production and operational workflows</span> from scratch to align with modern ERP architecture standards rather than just porting legacy behavior.</div>
+                    <div class="deliverable-item">Designed <span class="text-on-surface">backend services for inventory, order, and product lifecycle management</span> within the new Unleashed environment.</div>
+                    <div class="deliverable-item">Integrated external data sources and ensured <span class="text-on-surface">seamless cross-system synchronization</span> throughout the transition window.</div>
+                    <div class="deliverable-item">Executed a <span class="text-on-surface">staged migration strategy</span> that guaranteed zero data loss and business continuity throughout the cutover.</div>
+                  </div>
+                </div>
+                <div class="outcome-block rounded-xl p-6">
+                  <div class="font-code-sm text-[10px] text-secondary uppercase tracking-widest mb-3">Outcome</div>
+                  <p class="font-body-lg text-body-lg text-on-surface leading-relaxed">The client transitioned to a modern ERP system with improved operational efficiency, streamlined workflows, and significantly better inventory visibility — with no data loss and no downtime.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ PANEL 6: RAG Sales Agent ══ -->
+        <div class="project-panel">
+          <div class="panel-content" data-panel="5">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+              <div class="lg:col-span-4">
+                <div class="glass-panel rounded-xl p-6 space-y-5">
+                  <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary" style="font-size:40px">support_agent</span>
+                    <div>
+                      <div class="font-code-sm text-[10px] text-outline uppercase tracking-widest mb-1">Project 06</div>
+                      <h2 class="font-headline-md text-headline-md text-on-surface leading-tight">Agentic RAG<br/>Sales System</h2>
+                    </div>
+                  </div>
+                  <div class="h-px bg-outline-variant/30"></div>
+                  <div class="space-y-3">
+                    <div class="stat-block pl-3">
+                      <div class="font-code-sm text-[10px] text-outline uppercase tracking-widest">Type</div>
+                      <div class="font-body-md text-body-md text-on-surface">AI / Agentic System</div>
+                    </div>
+                    <div class="stat-block pl-3">
+                      <div class="font-code-sm text-[10px] text-outline uppercase tracking-widest">Status</div>
+                      <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-outline pulse-dot"></span>
+                        <span class="font-body-md text-body-md text-outline">R&D / Internal</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="h-px bg-outline-variant/30"></div>
+                  <div>
+                    <div class="font-code-sm text-[10px] text-outline uppercase tracking-widest mb-3">Tech Stack</div>
+                    <div class="flex flex-wrap gap-2">
+                      <span class="font-code-sm text-[11px] bg-surface-container-highest px-2 py-1 rounded text-primary">LangGraph</span>
+                      <span class="font-code-sm text-[11px] bg-surface-container-highest px-2 py-1 rounded text-primary">PGVector</span>
+                      <span class="font-code-sm text-[11px] bg-surface-container-highest px-2 py-1 rounded text-primary">OpenAI</span>
+                      <span class="font-code-sm text-[11px] bg-surface-container-highest px-2 py-1 rounded text-primary">FastAPI</span>
+                      <span class="font-code-sm text-[11px] bg-surface-container-highest px-2 py-1 rounded text-primary">PostgreSQL</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="lg:col-span-8 space-y-8">
+                <div class="space-y-3">
+                  <h3 class="font-headline-lg text-headline-lg text-on-surface">The Problem</h3>
+                  <p class="font-body-lg text-body-lg text-on-surface-variant leading-relaxed">Standard RAG chatbots retrieve documents and answer questions. That's useful, but it's not an agent — it can't reason across linked content, explore context chains, or guide a user toward a sale. We wanted to build something that could hold a meaningful product conversation grounded in real catalog data.</p>
+                </div>
+                <div class="space-y-4">
+                  <h3 class="font-headline-lg text-headline-lg text-on-surface">What We Built</h3>
+                  <div class="space-y-4 font-body-lg text-body-lg text-on-surface-variant">
+                    <div class="deliverable-item">Built an <span class="text-on-surface">agentic RAG application</span> using LangGraph — the agent reasons over retrieved content rather than just surfacing it.</div>
+                    <div class="deliverable-item">Implemented <span class="text-on-surface">semantic search with PGVector</span> for context-aware retrieval across product and content pages, ranking results by relevance to the user's actual intent.</div>
+                    <div class="deliverable-item">Added <span class="text-on-surface">linked-context expansion</span> — the agent follows semantic relationships between documents, pulling in related content the user didn't explicitly ask for but needs.</div>
+                    <div class="deliverable-item">Designed a <span class="text-on-surface">multi-step reasoning loop</span> that lets the agent plan retrieval, evaluate what it found, and decide whether to expand context before responding.</div>
+                    <div class="deliverable-item">Built the system as a <span class="text-on-surface">deployable FastAPI service</span>, ready to integrate into any product or content-heavy sales surface.</div>
+                  </div>
+                </div>
+                <div class="outcome-block rounded-xl p-6">
+                  <div class="font-code-sm text-[10px] text-secondary uppercase tracking-widest mb-3">Outcome</div>
+                  <p class="font-body-lg text-body-lg text-on-surface leading-relaxed">A working agentic RAG system that goes beyond document retrieval into genuine reasoning over a product catalog — the foundation for production sales agents we're building on top of.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /projects-track -->
+    </div><!-- /projects-viewport -->
+
+    <!-- Prev / Next nav -->
+    <div class="flex items-center justify-between mt-10 pt-8 border-t border-outline-variant/20">
+      <button id="btn-prev" class="flex items-center gap-2 font-code-sm text-code-sm text-on-surface-variant hover:text-primary transition-colors disabled:opacity-30 disabled:cursor-not-allowed" disabled>
+        <span class="material-symbols-outlined text-[18px]">arrow_back</span> Previous
+      </button>
+      <span id="panel-counter" class="font-code-sm text-code-sm text-outline">01 / 06</span>
+      <button id="btn-next" class="flex items-center gap-2 font-code-sm text-code-sm text-on-surface-variant hover:text-primary transition-colors">
+        Next <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+      </button>
+    </div>
+
+  </div><!-- /left panel area -->
+
+  <!-- ── Right: Timeline Sidebar ── -->
+  <div class="hidden md:flex flex-col items-center sticky top-24 self-start" style="width:80px; min-height: 520px;">
+    <!-- Top icon -->
+    <div class="timeline-top-icon mb-4" style="flex-shrink:0;">
+      <span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:#d0bcff;animation:spin-slow 12s linear infinite reverse;font-weight:600;">&lt;/&gt;</span>
+    </div>
+
+    <!-- Nodes container -->
+    <div id="timeline-nodes" class="relative flex flex-col items-center flex-1 w-full" style="min-height:380px;">
+      <!-- Static line -->
+      <div class="timeline-line"></div>
+      <!-- Animated progress -->
+      <div class="timeline-progress" id="timeline-progress" style="height:0%"></div>
+
+      <!-- Nodes -->
+      <div class="relative z-10 flex flex-col justify-between items-center h-full w-full py-2" style="min-height:380px;">
+
+        <div class="timeline-node active" data-idx="0">
+          <div class="node-dot"></div>
+          <span class="node-label">AttackEye</span>
+        </div>
+
+        <div class="timeline-node" data-idx="1">
+          <div class="node-dot"></div>
+          <span class="node-label">EzeHome</span>
+        </div>
+
+        <div class="timeline-node" data-idx="2">
+          <div class="node-dot"></div>
+          <span class="node-label">MorfBot</span>
+        </div>
+
+        <div class="timeline-node" data-idx="3">
+          <div class="node-dot"></div>
+          <span class="node-label">SOS Sync</span>
+        </div>
+
+        <div class="timeline-node" data-idx="4">
+          <div class="node-dot"></div>
+          <span class="node-label">ERP</span>
+        </div>
+
+        <div class="timeline-node" data-idx="5">
+          <div class="node-dot"></div>
+          <span class="node-label">RAG Agent</span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main layout -->
+
+<!-- CTA -->
+<div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop pb-24">
+  <div class="glass-panel rounded-2xl p-12 overflow-hidden relative text-center">
+    <div class="absolute top-0 right-0 w-64 h-64 bg-primary/10 blur-[100px] pointer-events-none"></div>
+    <div class="max-w-2xl mx-auto space-y-6 relative z-10">
+      <h2 class="font-headline-xl text-headline-xl">Have something to build?</h2>
+      <p class="font-body-lg text-body-lg text-on-surface-variant">Tell us what's broken, or what doesn't exist yet. We'll tell you honestly whether it's a good fit.</p>
+      <div class="flex justify-center gap-4 flex-wrap">
+        <a class="bg-primary text-on-primary px-8 py-3 rounded-lg font-headline-md text-headline-md flex items-center gap-2 hover:scale-105 active:scale-95 transition-transform" href="mailto:hello@hmlabs.dev">
+          <span class="material-symbols-outlined">mail</span> Email Us
+        </a>
+        <a class="bg-surface-container-high border border-outline-variant/40 text-on-surface px-8 py-3 rounded-lg font-headline-md text-headline-md flex items-center gap-2 hover:border-primary transition-colors" href="index.html">
+          ← Back to Home
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="bg-surface-container-lowest border-t border-outline-variant/50">
+  <div class="flex flex-col md:flex-row justify-between items-center py-6 px-margin-desktop w-full max-w-container-max mx-auto space-y-4 md:space-y-0">
+    <div class="flex items-center gap-4">
+      <span class="font-headline-md text-primary font-bold">HM Labs</span>
+      <span class="font-code-sm text-code-sm text-secondary">© 2026 HM Labs</span>
+    </div>
+    <div class="flex gap-6 font-code-sm text-code-sm text-on-tertiary-fixed-variant">
+      <span>Karachi, Pakistan</span>
+      <span>Remote-friendly</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  const TOTAL = 6;
+  let current = 0;
+
+  const track       = document.getElementById('projects-track');
+  const nodes       = document.querySelectorAll('.timeline-node');
+  const progress    = document.getElementById('timeline-progress');
+  const btnPrev     = document.getElementById('btn-prev');
+  const btnNext     = document.getElementById('btn-next');
+  const counter     = document.getElementById('panel-counter');
+  const mobPills    = document.querySelectorAll('.mob-pill');
+
+  // Check if hash points to a specific project on load
+  const hashMap = {
+    '#attackeye': 0, '#ezehome': 1, '#morfbot': 2,
+    '#sos-stocktrim': 3, '#unleashed-erp': 4, '#rag-agent': 5
+  };
+  if (window.location.hash && hashMap[window.location.hash] !== undefined) {
+    current = hashMap[window.location.hash];
+  }
+
+  function goTo(idx) {
+    if (idx < 0 || idx >= TOTAL) return;
+
+    // Fade out current panel content
+    const oldContent = track.querySelector(`.panel-content[data-panel="${current}"]`);
+    if (oldContent) oldContent.classList.remove('in');
+
+    current = idx;
+
+    // Slide track
+    track.style.transform = `translateX(-${current * 100}%)`;
+
+    // Fade in new panel content
+    setTimeout(() => {
+      const newContent = track.querySelector(`.panel-content[data-panel="${current}"]`);
+      if (newContent) newContent.classList.add('in');
+    }, 120);
+
+    // Update timeline nodes
+    nodes.forEach((node, i) => {
+      node.classList.remove('active', 'visited');
+      if (i === current) node.classList.add('active');
+      else if (i < current) node.classList.add('visited');
+    });
+
+    // Update timeline progress bar
+    // Progress goes from first node to current node
+    if (nodes.length > 1) {
+      const container = document.getElementById('timeline-nodes');
+      const containerRect = container.getBoundingClientRect();
+      const activeNode = nodes[current];
+      const dot = activeNode.querySelector('.node-dot');
+      const dotRect = dot.getBoundingClientRect();
+      const relativeTop = dotRect.top - containerRect.top + dot.offsetHeight / 2;
+      const pct = (relativeTop / containerRect.height) * 100;
+      progress.style.height = Math.max(0, pct) + '%';
+    }
+
+    // Update prev/next buttons
+    btnPrev.disabled = current === 0;
+    btnNext.disabled = current === TOTAL - 1;
+
+    // Update counter
+    counter.textContent = `0${current + 1} / 0${TOTAL}`;
+
+    // Update mobile pills
+    mobPills.forEach((pill, i) => {
+      pill.classList.toggle('text-primary', i === current);
+      pill.classList.toggle('border-primary', i === current);
+      pill.classList.toggle('text-on-surface-variant', i !== current);
+    });
+  }
+
+  // Timeline node clicks
+  nodes.forEach(node => {
+    node.addEventListener('click', () => goTo(+node.dataset.idx));
+  });
+
+  // Prev / Next
+  btnPrev.addEventListener('click', () => goTo(current - 1));
+  btnNext.addEventListener('click', () => goTo(current + 1));
+
+  // Mobile pills
+  mobPills.forEach(pill => {
+    pill.addEventListener('click', () => goTo(+pill.dataset.idx));
+  });
+
+  // Keyboard navigation
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goTo(current + 1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   goTo(current - 1);
+  });
+
+  // Init
+  goTo(current);
+
+  // Recalculate progress on resize
+  window.addEventListener('resize', () => goTo(current));
+})();
+</script>
+
+<script>
+/* ── Contact Form Logic ── */
+(function () {
+  const API = 'http://localhost:8000/api/contact';
+  const SOURCE = 'projects';
+
+  const fields = {
+    name:    document.getElementById('cf-name'),
+    email:   document.getElementById('cf-email'),
+    company: document.getElementById('cf-company'),
+    role:    document.getElementById('cf-role'),
+    service: document.getElementById('cf-service'),
+    budget:  document.getElementById('cf-budget'),
+    timeline:document.getElementById('cf-timeline'),
+    message: document.getElementById('cf-message'),
+  };
+  const btn       = document.getElementById('cf-submit');
+  const btnLabel  = document.getElementById('submit-label');
+  const btnIcon   = document.getElementById('submit-icon');
+  const status    = document.getElementById('form-status');
+  const statusMsg = document.getElementById('form-status-msg');
+  const statusIcon= document.getElementById('form-status-icon');
+  const charCount = document.getElementById('char-count');
+
+  // Char counter
+  fields.message.addEventListener('input', () => {
+    const len = fields.message.value.length;
+    charCount.textContent = len + ' / 1200';
+    charCount.classList.toggle('warn', len > 1100);
+  });
+
+  function showErr(fieldId, msg) {
+    const el = document.getElementById('cf-' + fieldId);
+    const errEl = document.getElementById('err-' + fieldId);
+    if (el) el.classList.add('err');
+    if (errEl) { errEl.textContent = msg; errEl.classList.add('show'); }
+  }
+  function clearErrs() {
+    ['name','email','service','message'].forEach(id => {
+      const el = document.getElementById('cf-' + id);
+      const errEl = document.getElementById('err-' + id);
+      if (el) el.classList.remove('err');
+      if (errEl) errEl.classList.remove('show');
+    });
+  }
+
+  function validate() {
+    clearErrs();
+    let ok = true;
+    if (!fields.name.value.trim()) { showErr('name', 'Please enter your name.'); ok = false; }
+    const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRe.test(fields.email.value.trim())) { showErr('email', 'Enter a valid email address.'); ok = false; }
+    if (!fields.service.value) { showErr('service', 'Please select a service.'); ok = false; }
+    if (fields.message.value.trim().length < 20) { showErr('message', 'Please describe your project (min 20 characters).'); ok = false; }
+    return ok;
+  }
+
+  function setStatus(type, msg) {
+    status.className = 'form-status ' + type;
+    statusIcon.textContent = type === 'success' ? 'check_circle' : 'error';
+    statusMsg.textContent = msg;
+    status.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  btn.addEventListener('click', async () => {
+    if (!validate()) return;
+    btn.disabled = true;
+    btnLabel.textContent = 'Sending…';
+    btnIcon.textContent = 'hourglass_empty';
+
+    const payload = {
+      name:        fields.name.value.trim(),
+      email:       fields.email.value.trim(),
+      company:     fields.company.value.trim() || null,
+      role:        fields.role.value || null,
+      service:     fields.service.value,
+      budget:      fields.budget.value || null,
+      timeline:    fields.timeline.value || null,
+      message:     fields.message.value.trim(),
+      source_page: SOURCE,
+    };
+
+    try {
+      const res = await fetch(API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setStatus('success', data.message || 'Message sent! We'll be in touch soon.');
+        document.getElementById('contact-form').style.opacity = '0.4';
+        document.getElementById('contact-form').style.pointerEvents = 'none';
+        btn.disabled = true;
+        btnLabel.textContent = 'Sent';
+        btnIcon.textContent = 'check';
+      } else {
+        setStatus('err-state', data.detail || 'Something went wrong. Please try again.');
+        btn.disabled = false;
+        btnLabel.textContent = 'Send message';
+        btnIcon.textContent = 'send';
+      }
+    } catch (err) {
+      setStatus('err-state', 'Could not reach the server. Please email us directly at hello@hmlabs.dev');
+      btn.disabled = false;
+      btnLabel.textContent = 'Send message';
+      btnIcon.textContent = 'send';
+    }
+  });
+})();
+</script>
+</body>
+</html>
