@@ -53,7 +53,7 @@
 
 @font-face {
   font-family: 'Material Symbols Outlined';
-  src: url('material-symbols-outlined.woff2') format('woff2');
+  src: url('material-symbols-subset.woff2') format('woff2');
   font-weight: 100 700;
   font-style: normal;
 }

@@ -921,7 +921,7 @@
               <div class="flex items-center justify-between pt-2 gap-4 flex-wrap">
                 <p class="font-code-sm text-[11px] text-outline">Fields marked <span class="text-primary">*</span> are
                   required</p>
-                <button id="cf-submit" type="button" class="form-submit-btn">
+                <button id="cf-submit" type="submit" class="form-submit-btn">
                   <span class="material-symbols-outlined text-[17px]" id="submit-icon">send</span>
                   <span id="submit-label">Send message</span>
                 </button>
@@ -1215,132 +1215,115 @@
   </script>
 
   <script>
-    /* ── HM Labs Contact Form — Netlify Forms via AJAX ── */
-    (function () {
-      const f = {
-        name:     document.getElementById('cf-name'),
-        email:    document.getElementById('cf-email'),
-        company:  document.getElementById('cf-company'),
-        role:     document.getElementById('cf-role'),
-        service:  document.getElementById('cf-service'),
-        budget:   document.getElementById('cf-budget'),
-        timeline: document.getElementById('cf-timeline'),
-        message:  document.getElementById('cf-message'),
-      };
-      const btn        = document.getElementById('cf-submit');
-      const btnLabel   = document.getElementById('submit-label');
-      const btnIcon    = document.getElementById('submit-icon');
-      const statusBox  = document.getElementById('form-status');
-      const statusMsg  = document.getElementById('form-status-msg');
-      const statusIcon = document.getElementById('form-status-icon');
-      const charCount  = document.getElementById('char-count');
+  /* ── HM Labs Contact Form — Netlify Forms via AJAX ── */
+  (function () {
+    const form     = document.getElementById('contact-form');
+    const btn      = document.getElementById('cf-submit');
+    const btnLabel = document.getElementById('submit-label');
+    const btnIcon  = document.getElementById('submit-icon');
+    const statusBox  = document.getElementById('form-status');
+    const statusMsg  = document.getElementById('form-status-msg');
+    const statusIcon = document.getElementById('form-status-icon');
+    const charCount  = document.getElementById('char-count');
 
-      if (!btn) return;
+    const f = {
+      name:     document.getElementById('cf-name'),
+      email:    document.getElementById('cf-email'),
+      company:  document.getElementById('cf-company'),
+      role:     document.getElementById('cf-role'),
+      service:  document.getElementById('cf-service'),
+      budget:   document.getElementById('cf-budget'),
+      timeline: document.getElementById('cf-timeline'),
+      message:  document.getElementById('cf-message'),
+    };
 
-      f.message.addEventListener('input', () => {
-        const len = f.message.value.length;
-        charCount.textContent = len + ' / 5000';
-        charCount.classList.toggle('warn', len > 4800);
-      });
+    if (!form) return;
 
-      function showErr(id, msg) {
+    f.message.addEventListener('input', () => {
+      const len = f.message.value.length;
+      charCount.textContent = len + ' / 5000';
+      charCount.classList.toggle('warn', len > 4800);
+    });
+
+    function showErr(id, msg) {
+      const el = document.getElementById('cf-' + id);
+      const er = document.getElementById('err-' + id);
+      if (el) el.classList.add('err');
+      if (er) { er.textContent = msg; er.classList.add('show'); }
+    }
+    function clearErrs() {
+      ['name', 'email', 'service', 'message'].forEach(id => {
         const el = document.getElementById('cf-' + id);
         const er = document.getElementById('err-' + id);
-        if (el) el.classList.add('err');
-        if (er) { er.textContent = msg; er.classList.add('show'); }
-      }
-      function clearErrs() {
-        ['name', 'email', 'service', 'message'].forEach(id => {
-          const el = document.getElementById('cf-' + id);
-          const er = document.getElementById('err-' + id);
-          if (el) el.classList.remove('err');
-          if (er) er.classList.remove('show');
-        });
-      }
-      function validate() {
-        clearErrs();
-        let ok = true;
-        if (!f.name.value.trim())
-          { showErr('name', 'Please enter your name.'); ok = false; }
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email.value.trim()))
-          { showErr('email', 'Enter a valid email address.'); ok = false; }
-        if (!f.service.value)
-          { showErr('service', 'Please select a service.'); ok = false; }
-        if (f.message.value.trim().length < 20)
-          { showErr('message', 'Please describe your project (min 20 characters).'); ok = false; }
-        return ok;
-      }
-      function setStatus(type, msg) {
-        statusBox.className = 'form-status ' + type;
-        statusIcon.textContent = type === 'success' ? 'check_circle' : 'error';
-        statusMsg.textContent = msg;
-        statusBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      }
+        if (el) el.classList.remove('err');
+        if (er) er.classList.remove('show');
+      });
+    }
+    function validate() {
+      clearErrs();
+      let ok = true;
+      if (!f.name.value.trim())
+        { showErr('name', 'Please enter your name.'); ok = false; }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email.value.trim()))
+        { showErr('email', 'Enter a valid email address.'); ok = false; }
+      if (!f.service.value)
+        { showErr('service', 'Please select a service.'); ok = false; }
+      if (f.message.value.trim().length < 20)
+        { showErr('message', 'Please describe your project (min 20 characters).'); ok = false; }
+      return ok;
+    }
+    function setStatus(type, msg) {
+      statusBox.className = 'form-status ' + type;
+      statusIcon.textContent = type === 'success' ? 'check_circle' : 'error';
+      statusMsg.textContent = msg;
+      statusBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
 
-      btn.addEventListener('click', async () => {
-        if (!validate()) return;
+    form.addEventListener('submit', function (event) {
+      event.preventDefault();
 
-        btn.disabled = true;
-        btnLabel.textContent = 'Sending…';
-        btnIcon.textContent = 'hourglass_empty';
+      if (!validate()) return;
 
-        // Encode as application/x-www-form-urlencoded — required by Netlify Forms
-        const encode = (data) =>
-        Object.keys(data)
-            .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(data[k]))
-            .join('&');
+      btn.disabled = true;
+      btnLabel.textContent = 'Sending…';
+      btnIcon.textContent = 'hourglass_empty';
 
-        try {
-        const res = await fetch('/', {
-            method:  'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: encode({
-            'form-name': 'contact',
-            name:        f.name.value.trim(),
-            email:       f.email.value.trim(),
-            company:     f.company.value.trim() || '',
-            role:        f.role.value || '',
-            service:     f.service.value,
-            budget:      f.budget.value || '',
-            timeline:    f.timeline.value || '',
-            message:     f.message.value.trim(),
-            }),
-        });
+      // Pass the form element directly — FormData picks up all
+      // named inputs automatically, including the hidden form-name
+      const formData = new FormData(form);
 
-          if (res.ok) {
-            setStatus('success', "We've received your message and will be in touch shortly.");
-            const form = document.getElementById('contact-form');
-            form.style.opacity = '0.4';
-            form.style.pointerEvents = 'none';
-            btnLabel.textContent = 'Sent';
-            btnIcon.textContent = 'check';
+      fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(formData).toString(),
+      })
+      .then(() => {
+        setStatus('success', "We've received your message and will be in touch shortly.");
+        form.style.opacity = '0.4';
+        form.style.pointerEvents = 'none';
+        btnLabel.textContent = 'Sent';
+        btnIcon.textContent = 'check';
 
-            // Reset after 5 seconds
-            setTimeout(() => {
-              statusBox.className = 'form-status';
-              form.style.opacity = '1';
-              form.style.pointerEvents = 'auto';
-              btn.disabled = false;
-              btnLabel.textContent = 'Send message';
-              btnIcon.textContent = 'send';
-              Object.values(f).forEach(field => { field.value = ''; });
-              charCount.textContent = '0 / 5000';
-            }, 5000);
-          } else {
-            setStatus('err-state', 'Something went wrong. Please try again or email us directly.');
-            btn.disabled = false;
-            btnLabel.textContent = 'Send message';
-            btnIcon.textContent = 'send';
-          }
-        } catch (e) {
-          setStatus('err-state', 'Could not reach the server. Please email us at hello@hmlabs.dev');
+        setTimeout(() => {
+          statusBox.className = 'form-status';
+          form.style.opacity = '1';
+          form.style.pointerEvents = 'auto';
           btn.disabled = false;
           btnLabel.textContent = 'Send message';
           btnIcon.textContent = 'send';
-        }
+          Object.values(f).forEach(field => { field.value = ''; });
+          charCount.textContent = '0 / 5000';
+        }, 5000);
+      })
+      .catch(() => {
+        setStatus('err-state', 'Could not reach the server. Please email us at hello@hmlabs.dev');
+        btn.disabled = false;
+        btnLabel.textContent = 'Send message';
+        btnIcon.textContent = 'send';
       });
-    })();
-  </script>
+    });
+  })();
+</script>
 
 </body>
 
